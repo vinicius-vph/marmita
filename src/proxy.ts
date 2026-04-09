@@ -4,7 +4,7 @@ import { jwtVerify } from 'jose';
 
 const getSecret = () => new TextEncoder().encode(process.env.AUTH_SECRET!);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === '/admin/login') return NextResponse.next();

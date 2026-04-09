@@ -25,18 +25,18 @@ export default function FundraisingTracker({ data }: { data: FundraisingSummary 
         <span>{formatCurrency(goal)}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mt-4">
-        <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">Angariado</p>
-          <p className="text-lg font-bold text-green-700">{formatCurrency(raised)}</p>
+      <div className="grid grid-cols-3 gap-2 mt-4">
+        <div className="bg-white rounded-xl p-2 md:p-3 text-center shadow-sm">
+          <p className="text-[10px] md:text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">Angariado</p>
+          <p className="text-sm md:text-lg font-bold text-green-700 break-all">{formatCurrency(raised)}</p>
         </div>
-        <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">Objetivo</p>
-          <p className="text-lg font-bold text-teal-700">{formatCurrency(goal)}</p>
+        <div className="bg-white rounded-xl p-2 md:p-3 text-center shadow-sm">
+          <p className="text-[10px] md:text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">Objetivo</p>
+          <p className="text-sm md:text-lg font-bold text-teal-700 break-all">{formatCurrency(goal)}</p>
         </div>
-        <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">Falta</p>
-          <p className="text-lg font-bold text-[#1a3a3a]">
+        <div className="bg-white rounded-xl p-2 md:p-3 text-center shadow-sm">
+          <p className="text-[10px] md:text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">Falta</p>
+          <p className="text-sm md:text-lg font-bold text-[#1a3a3a] break-all">
             {goalReached ? '🎉 Meta!' : formatCurrency(remaining)}
           </p>
         </div>
