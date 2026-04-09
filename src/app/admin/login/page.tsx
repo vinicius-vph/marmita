@@ -22,7 +22,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      router.push('/admin');
+      window.location.href = '/admin';
     } else {
       const data = await res.json();
       setError(data.error ?? 'Senha incorreta.');
