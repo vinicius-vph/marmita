@@ -1,3 +1,5 @@
+export const revalidate = 0;
+
 import Image from 'next/image';
 import { createAdminClient } from '@/lib/supabase/server';
 import FundraisingTracker from '@/components/public/FundraisingTracker';

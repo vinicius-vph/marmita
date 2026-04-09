@@ -8,6 +8,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
   const [data, setData] = useState(initial);
   const [goal, setGoal] = useState(String(initial.goal));
   const [label, setLabel] = useState(initial.label);
+  const [manualRaised, setManualRaised] = useState(String(initial.raised));
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -21,16 +22,13 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
     const res = await fetch('/api/admin/meta', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal, label }),
+      body: JSON.stringify({ goal, label, manual_raised: manualRaised }),
     });
 
     if (res.ok) {
-      setData((prev) => ({
-        ...prev,
-        goal: parseFloat(goal),
-        label,
-        remaining: parseFloat(goal) - prev.raised,
-      }));
+      const newGoal = parseFloat(goal);
+      const newRaised = parseFloat(manualRaised);
+      setData({ goal: newGoal, label, raised: newRaised, remaining: newGoal - newRaised });
       setMessage('Objetivo atualizado com sucesso!');
     } else {
       const d = await res.json();
@@ -92,6 +90,19 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
             required
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">Valor já angariado (€)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={manualRaised}
+            onChange={(e) => setManualRaised(e.target.value)}
+            className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+          />
+          <p className="text-xs text-[#1a3a3a]/40 mt-1">Inclui donativos recebidos fora da plataforma.</p>
         </div>
 
         {error && <p className="text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">{error}</p>}

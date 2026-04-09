@@ -43,10 +43,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 # db
-/db*
+.env.db
 
-#claude
+# claude
 CLAUDE.md
+AGENTS.md
 /.claude
 claude-plan.md
 supabase-schema.sql
