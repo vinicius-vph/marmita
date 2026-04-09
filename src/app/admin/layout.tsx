@@ -9,7 +9,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen flex flex-col bg-stone-100">
       <header className="bg-teal-900 text-white px-4 py-3 shadow">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <h1 className="font-bold text-base text-teal-100">Gestão — Marmita Solidária</h1>
+          <Link href="/" className="font-bold text-base text-teal-100 hover:text-white transition-colors">
+            Gestão — Marmita Solidária
+          </Link>
 
           {isLoggedIn && (
             <nav className="flex items-center gap-4 text-sm">
@@ -23,9 +25,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 Objetivo
               </Link>
               <span className="text-teal-700">|</span>
-              <Link href="/" className="text-teal-400 hover:text-white transition-colors">
-                ← Site
-              </Link>
               <LogoutButton />
             </nav>
           )}
