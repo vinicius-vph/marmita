@@ -33,6 +33,7 @@ yarn-error.log*
 # env files
 .env
 .env.local
+.env.example
 .env.*.local
 
 # vercel
@@ -41,4 +42,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# db
+/db*
+
+#claude
+CLAUDE.md
+/.claude
 claude-plan.md
+supabase-schema.sql
