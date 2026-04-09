@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,17 +13,30 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    const res = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
-    });
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
 
-    if (res.ok) {
-      window.location.href = '/admin';
-    } else {
-      const data = await res.json();
-      setError(data.error ?? 'Senha incorreta.');
+      if (res.ok) {
+        window.location.href = '/admin';
+        return;
+      }
+
+      let message = 'Senha incorreta.';
+      try {
+        const data = await res.json();
+        if (data?.error) message = data.error;
+      } catch {
+        // resposta sem JSON válido — mantém mensagem padrão
+      }
+
+      setError(message);
+    } catch {
+      setError('Erro de ligação. Verifique a sua internet e tente novamente.');
+    } finally {
       setLoading(false);
     }
   }
@@ -55,15 +66,20 @@ export default function LoginPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setError(''); }}
               required
               autoFocus
-              className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 transition-colors ${
+                error ? 'border-red-400 bg-red-50' : 'border-stone-300'
+              }`}
             />
           </div>
 
           {error && (
-            <p className="text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">{error}</p>
+            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-3 py-2.5">
+              <span className="shrink-0 mt-0.5">⚠️</span>
+              <span>{error}</span>
+            </div>
           )}
 
           <button
@@ -71,7 +87,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-bold py-2.5 rounded-xl transition-colors"
           >
-            {loading ? 'A entrar...' : 'Entrar'}
+            {loading ? 'A verificar...' : 'Entrar'}
           </button>
         </form>
 
