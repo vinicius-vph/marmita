@@ -9,15 +9,21 @@ export async function POST(req: NextRequest) {
   }
 
   const token = await signAdminToken();
+  const isProduction = process.env.NODE_ENV === 'production';
+  const cookieOptions = [
+    `${COOKIE_NAME}=${token}`,
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${60 * 60 * 8}`,
+    'Path=/',
+    ...(isProduction ? ['Secure'] : []),
+  ].join('; ');
 
-  const response = NextResponse.json({ success: true });
-  response.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 8, // 8 horas
-    path: '/',
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Set-Cookie': cookieOptions,
+    },
   });
-
-  return response;
 }
