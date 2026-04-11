@@ -2,19 +2,21 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { MenuItem } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import MenuForm from './MenuForm';
 
 export default function MenuManager({ items: initial }: { items: MenuItem[] }) {
   const router = useRouter();
+  const t = useTranslations('MenuManager');
   const [items, setItems] = useState(initial);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<MenuItem | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   async function handleDelete(id: string) {
-    if (!confirm('Remover este prato do menu?')) return;
+    if (!confirm(t('confirmRemove'))) return;
     setDeleting(id);
     const res = await fetch(`/api/menu/${id}`, { method: 'DELETE' });
     if (res.ok) {
@@ -47,12 +49,12 @@ export default function MenuManager({ items: initial }: { items: MenuItem[] }) {
           onClick={() => setShowForm(true)}
           className="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"
         >
-          + Adicionar prato
+          {t('add')}
         </button>
       )}
 
       {items.length === 0 ? (
-        <p className="text-[#1a3a3a]/40 text-center py-8">Nenhum prato no menu. Adicione um acima.</p>
+        <p className="text-[#1a3a3a]/40 text-center py-8">{t('empty')}</p>
       ) : (
         <div className="space-y-3">
           {items.map((item) => (
@@ -71,14 +73,14 @@ export default function MenuManager({ items: initial }: { items: MenuItem[] }) {
                     onClick={() => { setEditing(item); setShowForm(false); }}
                     className="text-xs bg-stone-100 hover:bg-stone-200 text-[#1a3a3a]/70 font-medium px-3 py-1 rounded-full transition-colors"
                   >
-                    Editar
+                    {t('edit')}
                   </button>
                   <button
                     onClick={() => handleDelete(item.id)}
                     disabled={deleting === item.id}
                     className="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-medium px-3 py-1 rounded-full transition-colors disabled:opacity-50"
                   >
-                    {deleting === item.id ? '...' : 'Remover'}
+                    {deleting === item.id ? '...' : t('remove')}
                   </button>
                 </div>
               </div>

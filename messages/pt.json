@@ -1,0 +1,140 @@
+{
+  "Home": {
+    "title": "Marmita Solidária",
+    "subtitle": "Primeira Igreja Baptista de Vila Real",
+    "tagline": "Cada refeição é uma bênção para as obras do nosso templo",
+    "noMeals": "Não há refeições disponíveis esta semana.",
+    "comeBackSoon": "Volte em breve!",
+    "payment": "Pagamentos via MBWay para",
+    "adminLink": "Área de gestão"
+  },
+  "ReservationForm": {
+    "title": "Fazer Reserva",
+    "chooseDish": "Escolha o prato:",
+    "fullName": "Nome completo *",
+    "phone": "Telefone *",
+    "quantity": "Quantidade *",
+    "totalLabel": "Total a pagar via MBWay: ",
+    "submit": "Confirmar Reserva",
+    "submitting": "A submeter...",
+    "noMeals": "Não há pratos disponíveis para esta semana. Volte em breve!",
+    "errorNoDish": "Por favor selecione um prato.",
+    "errorName": "Por favor insira o seu nome completo.",
+    "errorPhone": "Por favor insira um número de telefone válido.",
+    "errorQuantity": "A quantidade deve ser pelo menos 1.",
+    "errorSubmit": "Erro ao submeter reserva.",
+    "errorConnection": "Erro de ligação. Por favor tente novamente."
+  },
+  "MenuCard": {
+    "selected": "✓ Selecionado"
+  },
+  "FundraisingTracker": {
+    "tagline": "Cada refeição comprada aproxima-nos do nosso objetivo!",
+    "percentage": "{value}% alcançado",
+    "raised": "Angariado",
+    "goal": "Objetivo",
+    "missing": "Falta",
+    "goalReachedShort": "🎉 Meta!",
+    "goalReached": "Objetivo alcançado! Obrigado pela vossa generosidade!"
+  },
+  "ThankYou": {
+    "title": "Obrigado, {name}!",
+    "subtitle": "A sua reserva foi recebida com sucesso.",
+    "dish": "Prato",
+    "quantity": "Quantidade",
+    "total": "Total a pagar",
+    "paymentTitle": "Como pagar via MBWay",
+    "step1": "Abra a aplicação MBWay no seu telemóvel",
+    "step2": "Selecione \"Enviar Dinheiro\" ➡️ \"Mbway\"",
+    "step3": "Insira o número:",
+    "step4": "Insira o valor:",
+    "step5": "Na descrição/referência escreva o texto:",
+    "step5ref": "Reserva de marmita {dish} {name}",
+    "step6": "Confirme o pagamento",
+    "disclaimer": "Após o pagamento, a sua reserva será confirmada pela nossa equipa. Obrigado pela sua generosidade!",
+    "back": "Voltar ao início"
+  },
+  "AdminLogin": {
+    "area": "Área de Gestão",
+    "app": "Marmita Solidária",
+    "password": "Senha",
+    "enter": "Entrar",
+    "checking": "A verificar...",
+    "back": "← Voltar ao site",
+    "errorDefault": "Senha incorreta.",
+    "errorConnection": "Erro de ligação. Verifique a sua internet e tente novamente."
+  },
+  "AdminLayout": {
+    "title": "Gestão — Marmita Solidária",
+    "reservations": "Reservas",
+    "menu": "Menu",
+    "goal": "Objetivo"
+  },
+  "AdminDashboard": {
+    "title": "Reservas",
+    "error": "Erro ao carregar reservas: {message}"
+  },
+  "ReservationsTable": {
+    "received": "Recebido",
+    "pending": "Pendente",
+    "filterAll": "Todos",
+    "filterPending": "Pendentes",
+    "filterPaid": "Confirmados",
+    "empty": "Sem reservas nesta categoria.",
+    "paid": "✓ Pago",
+    "confirmPayment": "Confirmar pagamento",
+    "confirming": "A confirmar...",
+    "reservedAt": "Reservado em {date}"
+  },
+  "AdminMenu": {
+    "title": "Menu Semanal",
+    "error": "Erro ao carregar menu: {message}"
+  },
+  "MenuManager": {
+    "add": "+ Adicionar prato",
+    "empty": "Nenhum prato no menu. Adicione um acima.",
+    "edit": "Editar",
+    "remove": "Remover",
+    "confirmRemove": "Remover este prato do menu?"
+  },
+  "MenuForm": {
+    "editTitle": "Editar Prato",
+    "addTitle": "Adicionar Prato",
+    "name": "Nome *",
+    "description": "Descrição",
+    "price": "Preço (€) *",
+    "date": "Data da refeição *",
+    "photo": "Fotografia do prato",
+    "photoOptional": "(opcional, máx. 2 MB)",
+    "chooseImage": "Clique para escolher imagem",
+    "formats": "JPG, PNG ou WebP",
+    "tooBig": "Imagem demasiado grande. Máximo 2 MB.",
+    "saving": "A guardar...",
+    "update": "Atualizar",
+    "add": "Adicionar",
+    "cancel": "Cancelar",
+    "errorDefault": "Erro ao guardar."
+  },
+  "AdminMeta": {
+    "title": "Objetivo de Angariação",
+    "error": "Erro: {message}"
+  },
+  "GoalForm": {
+    "raised": "Angariado",
+    "goal": "Objetivo",
+    "missing": "Falta",
+    "percentage": "{value}% do objetivo alcançado",
+    "updateTitle": "Atualizar Objetivo",
+    "campaign": "Nome da campanha",
+    "goalAmount": "Valor do objetivo (€) *",
+    "raisedAmount": "Valor já angariado (€)",
+    "hint": "Inclui donativos recebidos fora da plataforma.",
+    "saving": "A guardar...",
+    "save": "Atualizar objetivo",
+    "success": "Objetivo atualizado com sucesso!",
+    "errorDefault": "Erro ao guardar."
+  },
+  "Admin": {
+    "logout": "Sair"
+  }
+}

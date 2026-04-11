@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { FundraisingSummary } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 
 export default function GoalForm({ data: initial }: { data: FundraisingSummary }) {
+  const t = useTranslations('GoalForm');
   const [data, setData] = useState(initial);
   const [goal, setGoal] = useState(String(initial.goal));
   const [label, setLabel] = useState(initial.label);
@@ -29,10 +31,10 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
       const newGoal = parseFloat(goal);
       const newRaised = parseFloat(manualRaised);
       setData({ goal: newGoal, label, raised: newRaised, remaining: newGoal - newRaised });
-      setMessage('Objetivo atualizado com sucesso!');
+      setMessage(t('success'));
     } else {
       const d = await res.json();
-      setError(d.error ?? 'Erro ao guardar.');
+      setError(d.error ?? t('errorDefault'));
     }
     setLoading(false);
   }
@@ -43,15 +45,15 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-          <p className="text-xs text-green-600 uppercase tracking-wide">Angariado</p>
+          <p className="text-xs text-green-600 uppercase tracking-wide">{t('raised')}</p>
           <p className="text-xl font-bold text-green-700">{formatCurrency(data.raised)}</p>
         </div>
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
-          <p className="text-xs text-teal-600 uppercase tracking-wide">Objetivo</p>
+          <p className="text-xs text-teal-600 uppercase tracking-wide">{t('goal')}</p>
           <p className="text-xl font-bold text-teal-700">{formatCurrency(data.goal)}</p>
         </div>
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-4">
-          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide">Falta</p>
+          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide">{t('missing')}</p>
           <p className="text-xl font-bold text-[#1a3a3a]">{formatCurrency(Math.max(0, data.remaining))}</p>
         </div>
       </div>
@@ -63,14 +65,14 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <p className="text-xs text-center text-[#1a3a3a]/50 mt-1">{percentage}% do objetivo alcançado</p>
+        <p className="text-xs text-center text-[#1a3a3a]/50 mt-1">{t('percentage', { value: percentage })}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm space-y-4">
-        <h3 className="font-bold text-[#1a3a3a]">Atualizar Objetivo</h3>
+        <h3 className="font-bold text-[#1a3a3a]">{t('updateTitle')}</h3>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">Nome da campanha</label>
+          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('campaign')}</label>
           <input
             type="text"
             value={label}
@@ -80,7 +82,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">Valor do objetivo (€) *</label>
+          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('goalAmount')}</label>
           <input
             type="number"
             step="0.01"
@@ -93,7 +95,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">Valor já angariado (€)</label>
+          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('raisedAmount')}</label>
           <input
             type="number"
             step="0.01"
@@ -102,7 +104,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
             onChange={(e) => setManualRaised(e.target.value)}
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
-          <p className="text-xs text-[#1a3a3a]/40 mt-1">Inclui donativos recebidos fora da plataforma.</p>
+          <p className="text-xs text-[#1a3a3a]/40 mt-1">{t('hint')}</p>
         </div>
 
         {error && <p className="text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">{error}</p>}
@@ -113,7 +115,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
           disabled={loading}
           className="bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"
         >
-          {loading ? 'A guardar...' : 'Atualizar objetivo'}
+          {loading ? t('saving') : t('save')}
         </button>
       </form>
     </div>

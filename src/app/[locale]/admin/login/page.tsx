@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const t = useTranslations('AdminLogin');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,7 +28,7 @@ export default function LoginPage() {
         return;
       }
 
-      let message = 'Senha incorreta.';
+      let message = t('errorDefault');
       try {
         const data = await res.json();
         if (data?.error) message = data.error;
@@ -36,7 +38,7 @@ export default function LoginPage() {
 
       setError(message);
     } catch {
-      setError('Erro de ligação. Verifique a sua internet e tente novamente.');
+      setError(t('errorConnection'));
     } finally {
       setLoading(false);
     }
@@ -54,14 +56,14 @@ export default function LoginPage() {
             className="rounded-full border-2 border-teal-200 shadow mb-3"
             priority
           />
-          <h1 className="text-xl font-bold text-[#1a3a3a]">Área de Gestão</h1>
-          <p className="text-sm text-[#1a3a3a]/50">Marmita Solidária</p>
+          <h1 className="text-xl font-bold text-[#1a3a3a]">{t('area')}</h1>
+          <p className="text-sm text-[#1a3a3a]/50">{t('app')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-[#1a3a3a] mb-1">
-              Senha
+              {t('password')}
             </label>
             <input
               id="password"
@@ -88,13 +90,13 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-bold py-2.5 rounded-xl transition-colors"
           >
-            {loading ? 'A verificar...' : 'Entrar'}
+            {loading ? t('checking') : t('enter')}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <a href="/" className="text-xs text-[#1a3a3a]/40 hover:text-[#1a3a3a] underline">
-            ← Voltar ao site
+            {t('back')}
           </a>
         </div>
       </div>

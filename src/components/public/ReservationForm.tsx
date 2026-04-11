@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { MenuItem } from '@/types';
 import MenuCard from './MenuCard';
 import { formatCurrency } from '@/lib/utils';
 
 export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }) {
   const router = useRouter();
+  const t = useTranslations('ReservationForm');
   const [selectedId, setSelectedId] = useState<string>(menuItems[0]?.id ?? '');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -22,11 +24,11 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
     e.preventDefault();
     setError('');
 
-    if (!selectedId) { setError('Por favor selecione um prato.'); return; }
-    if (name.trim().length < 3) { setError('Por favor insira o seu nome completo.'); return; }
+    if (!selectedId) { setError(t('errorNoDish')); return; }
+    if (name.trim().length < 3) { setError(t('errorName')); return; }
     const phoneDigits = phone.replace(/\D/g, '');
-    if (phoneDigits.length < 9) { setError('Por favor insira um número de telefone válido.'); return; }
-    if (quantity < 1) { setError('A quantidade deve ser pelo menos 1.'); return; }
+    if (phoneDigits.length < 9) { setError(t('errorPhone')); return; }
+    if (quantity < 1) { setError(t('errorQuantity')); return; }
 
     setLoading(true);
     try {
@@ -42,7 +44,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
       });
 
       const data = await res.json();
-      if (!res.ok) { setError(data.error ?? 'Erro ao submeter reserva.'); setLoading(false); return; }
+      if (!res.ok) { setError(data.error ?? t('errorSubmit')); setLoading(false); return; }
 
       const params = new URLSearchParams({
         nome: name.trim(),
@@ -52,7 +54,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
       });
       router.push(`/obrigado?${params.toString()}`);
     } catch {
-      setError('Erro de ligação. Por favor tente novamente.');
+      setError(t('errorConnection'));
       setLoading(false);
     }
   }
@@ -60,17 +62,17 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
   if (menuItems.length === 0) {
     return (
       <div className="text-center py-8 text-[#1a3a3a]/50">
-        Não há pratos disponíveis para esta semana. Volte em breve!
+        {t('noMeals')}
       </div>
     );
   }
 
   return (
     <section id="reserva" className="space-y-6">
-      <h2 className="text-2xl font-bold text-[#1a3a3a]">Fazer Reserva</h2>
+      <h2 className="text-2xl font-bold text-[#1a3a3a]">{t('title')}</h2>
 
       <div>
-        <p className="text-sm font-medium text-[#1a3a3a]/70 mb-3">Escolha o prato:</p>
+        <p className="text-sm font-medium text-[#1a3a3a]/70 mb-3">{t('chooseDish')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {menuItems.map((item) => (
             <MenuCard
@@ -86,7 +88,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-[#1a3a3a] mb-1">
-            Nome completo *
+            {t('fullName')}
           </label>
           <input
             id="name"
@@ -101,7 +103,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
 
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-[#1a3a3a] mb-1">
-            Telefone *
+            {t('phone')}
           </label>
           <input
             id="phone"
@@ -116,7 +118,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
 
         <div>
           <label htmlFor="quantity" className="block text-sm font-medium text-[#1a3a3a] mb-1">
-            Quantidade *
+            {t('quantity')}
           </label>
           <div className="flex items-center gap-3">
             <button
@@ -139,7 +141,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
 
         {selectedItem && (
           <div className="bg-teal-50 rounded-lg p-3 text-sm">
-            <span className="text-[#1a3a3a]/70">Total a pagar via MBWay: </span>
+            <span className="text-[#1a3a3a]/70">{t('totalLabel')}</span>
             <span className="font-bold text-teal-800 text-base">{formatCurrency(total)}</span>
           </div>
         )}
@@ -153,7 +155,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
           disabled={loading}
           className="w-full bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-bold py-3 rounded-xl transition-colors"
         >
-          {loading ? 'A submeter...' : 'Confirmar Reserva'}
+          {loading ? t('submitting') : t('submit')}
         </button>
       </form>
     </section>

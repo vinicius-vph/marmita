@@ -1,0 +1,140 @@
+{
+  "Home": {
+    "title": "Marmita Solidária",
+    "subtitle": "Primeira Igreja Baptista de Vila Real",
+    "tagline": "Every meal is a blessing for the works of our temple",
+    "noMeals": "No meals available this week.",
+    "comeBackSoon": "Come back soon!",
+    "payment": "Payments via MBWay to",
+    "adminLink": "Management area"
+  },
+  "ReservationForm": {
+    "title": "Make a Reservation",
+    "chooseDish": "Choose a dish:",
+    "fullName": "Full name *",
+    "phone": "Phone *",
+    "quantity": "Quantity *",
+    "totalLabel": "Total to pay via MBWay: ",
+    "submit": "Confirm Reservation",
+    "submitting": "Submitting...",
+    "noMeals": "No dishes available this week. Come back soon!",
+    "errorNoDish": "Please select a dish.",
+    "errorName": "Please enter your full name.",
+    "errorPhone": "Please enter a valid phone number.",
+    "errorQuantity": "Quantity must be at least 1.",
+    "errorSubmit": "Error submitting reservation.",
+    "errorConnection": "Connection error. Please try again."
+  },
+  "MenuCard": {
+    "selected": "✓ Selected"
+  },
+  "FundraisingTracker": {
+    "tagline": "Every meal brings us closer to our goal!",
+    "percentage": "{value}% reached",
+    "raised": "Raised",
+    "goal": "Goal",
+    "missing": "Missing",
+    "goalReachedShort": "🎉 Goal!",
+    "goalReached": "Goal reached! Thank you for your generosity!"
+  },
+  "ThankYou": {
+    "title": "Thank you, {name}!",
+    "subtitle": "Your reservation has been received successfully.",
+    "dish": "Dish",
+    "quantity": "Quantity",
+    "total": "Total to pay",
+    "paymentTitle": "How to pay via MBWay",
+    "step1": "Open the MBWay app on your phone",
+    "step2": "Select \"Send Money\" ➡️ \"Mbway\"",
+    "step3": "Enter the number:",
+    "step4": "Enter the amount:",
+    "step5": "In the description/reference write:",
+    "step5ref": "Marmita reservation {dish} {name}",
+    "step6": "Confirm the payment",
+    "disclaimer": "After payment, your reservation will be confirmed by our team. Thank you for your generosity!",
+    "back": "Back to home"
+  },
+  "AdminLogin": {
+    "area": "Management Area",
+    "app": "Marmita Solidária",
+    "password": "Password",
+    "enter": "Sign in",
+    "checking": "Verifying...",
+    "back": "← Back to site",
+    "errorDefault": "Incorrect password.",
+    "errorConnection": "Connection error. Please check your internet and try again."
+  },
+  "AdminLayout": {
+    "title": "Management — Marmita Solidária",
+    "reservations": "Reservations",
+    "menu": "Menu",
+    "goal": "Goal"
+  },
+  "AdminDashboard": {
+    "title": "Reservations",
+    "error": "Error loading reservations: {message}"
+  },
+  "ReservationsTable": {
+    "received": "Received",
+    "pending": "Pending",
+    "filterAll": "All",
+    "filterPending": "Pending",
+    "filterPaid": "Confirmed",
+    "empty": "No reservations in this category.",
+    "paid": "✓ Paid",
+    "confirmPayment": "Confirm payment",
+    "confirming": "Confirming...",
+    "reservedAt": "Reserved on {date}"
+  },
+  "AdminMenu": {
+    "title": "Weekly Menu",
+    "error": "Error loading menu: {message}"
+  },
+  "MenuManager": {
+    "add": "+ Add dish",
+    "empty": "No dishes on the menu. Add one above.",
+    "edit": "Edit",
+    "remove": "Remove",
+    "confirmRemove": "Remove this dish from the menu?"
+  },
+  "MenuForm": {
+    "editTitle": "Edit Dish",
+    "addTitle": "Add Dish",
+    "name": "Name *",
+    "description": "Description",
+    "price": "Price (€) *",
+    "date": "Meal date *",
+    "photo": "Dish photo",
+    "photoOptional": "(optional, max 2 MB)",
+    "chooseImage": "Click to choose image",
+    "formats": "JPG, PNG or WebP",
+    "tooBig": "Image too large. Maximum 2 MB.",
+    "saving": "Saving...",
+    "update": "Update",
+    "add": "Add",
+    "cancel": "Cancel",
+    "errorDefault": "Error saving."
+  },
+  "AdminMeta": {
+    "title": "Fundraising Goal",
+    "error": "Error: {message}"
+  },
+  "GoalForm": {
+    "raised": "Raised",
+    "goal": "Goal",
+    "missing": "Missing",
+    "percentage": "{value}% of goal reached",
+    "updateTitle": "Update Goal",
+    "campaign": "Campaign name",
+    "goalAmount": "Goal amount (€) *",
+    "raisedAmount": "Amount already raised (€)",
+    "hint": "Includes donations received outside the platform.",
+    "saving": "Saving...",
+    "save": "Update goal",
+    "success": "Goal updated successfully!",
+    "errorDefault": "Error saving."
+  },
+  "Admin": {
+    "logout": "Sign out"
+  }
+}

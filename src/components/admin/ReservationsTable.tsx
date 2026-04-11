@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Reservation } from '@/types';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 
@@ -9,6 +10,7 @@ type Filter = 'all' | 'pending' | 'paid';
 
 export default function ReservationsTable({ reservations: initial }: { reservations: Reservation[] }) {
   const router = useRouter();
+  const t = useTranslations('ReservationsTable');
   const [reservations, setReservations] = useState(initial);
   const [filter, setFilter] = useState<Filter>('all');
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -34,15 +36,21 @@ export default function ReservationsTable({ reservations: initial }: { reservati
     setConfirming(null);
   }
 
+  const filterLabels: Record<Filter, string> = {
+    all: t('filterAll'),
+    pending: t('filterPending'),
+    paid: t('filterPaid'),
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-          <p className="text-xs text-green-600 uppercase tracking-wide">Recebido</p>
+          <p className="text-xs text-green-600 uppercase tracking-wide">{t('received')}</p>
           <p className="text-xl font-bold text-green-700">{formatCurrency(totalPaid)}</p>
         </div>
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
-          <p className="text-xs text-teal-600 uppercase tracking-wide">Pendente</p>
+          <p className="text-xs text-teal-600 uppercase tracking-wide">{t('pending')}</p>
           <p className="text-xl font-bold text-teal-700">{formatCurrency(totalPending)}</p>
         </div>
       </div>
@@ -58,8 +66,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
                 : 'bg-white border border-stone-300 text-[#1a3a3a]/70 hover:bg-stone-50'
             }`}
           >
-            {f === 'all' ? 'Todos' : f === 'pending' ? 'Pendentes' : 'Confirmados'}
-            {' '}
+            {filterLabels[f]}{' '}
             <span className="opacity-70">
               ({reservations.filter((r) =>
                 f === 'all' ? true : f === 'pending' ? !r.paid : r.paid
@@ -70,7 +77,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-center text-[#1a3a3a]/40 py-8">Sem reservas nesta categoria.</p>
+        <p className="text-center text-[#1a3a3a]/40 py-8">{t('empty')}</p>
       ) : (
         <div className="space-y-3">
           {filtered.map((r) => (
@@ -93,14 +100,14 @@ export default function ReservationsTable({ reservations: initial }: { reservati
                     </p>
                   )}
                   <p className="text-xs text-[#1a3a3a]/40 mt-1">
-                    Reservado em {formatDateTime(r.created_at)}
+                    {t('reservedAt', { date: formatDateTime(r.created_at) })}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-bold text-teal-700">{formatCurrency(r.total_amount)}</p>
                   {r.paid ? (
                     <span className="inline-block mt-1 text-xs bg-green-100 text-green-700 font-medium px-2 py-0.5 rounded-full">
-                      ✓ Pago
+                      {t('paid')}
                     </span>
                   ) : (
                     <button
@@ -108,7 +115,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
                       disabled={confirming === r.id}
                       className="mt-1 text-xs bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-medium px-3 py-1 rounded-full transition-colors"
                     >
-                      {confirming === r.id ? 'A confirmar...' : 'Confirmar pagamento'}
+                      {confirming === r.id ? t('confirming') : t('confirmPayment')}
                     </button>
                   )}
                 </div>

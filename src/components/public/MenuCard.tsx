@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { MenuItem } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
@@ -9,6 +12,8 @@ interface MenuCardProps {
 }
 
 export default function MenuCard({ item, selected, onSelect }: MenuCardProps) {
+  const t = useTranslations('MenuCard');
+
   return (
     <button
       type="button"
@@ -32,7 +37,7 @@ export default function MenuCard({ item, selected, onSelect }: MenuCardProps) {
           {selected && (
             <div className="absolute inset-0 bg-teal-600/10 flex items-start justify-end p-2">
               <span className="bg-teal-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                ✓ Selecionado
+                {t('selected')}
               </span>
             </div>
           )}
@@ -60,7 +65,7 @@ export default function MenuCard({ item, selected, onSelect }: MenuCardProps) {
           {formatDate(item.meal_date)}
         </p>
         {selected && !item.image_url && (
-          <p className="text-xs text-teal-600 font-semibold mt-1">✓ Selecionado</p>
+          <p className="text-xs text-teal-600 font-semibold mt-1">{t('selected')}</p>
         )}
       </div>
     </button>
