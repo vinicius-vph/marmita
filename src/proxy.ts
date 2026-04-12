@@ -3,9 +3,10 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from '@/i18n/routing';
+import { env } from '@/env';
 
 const intlMiddleware = createIntlMiddleware(routing);
-const getSecret = () => new TextEncoder().encode(process.env.AUTH_SECRET!);
+const getSecret = () => new TextEncoder().encode(env.AUTH_SECRET);
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

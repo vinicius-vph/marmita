@@ -1,7 +1,8 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { env } from '@/env';
 
-const getSecret = () => new TextEncoder().encode(process.env.AUTH_SECRET!);
+const getSecret = () => new TextEncoder().encode(env.AUTH_SECRET);
 export const COOKIE_NAME = 'admin_session';
 
 export async function signAdminToken(): Promise<string> {

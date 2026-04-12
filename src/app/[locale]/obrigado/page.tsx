@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { formatCurrency, formatPhone } from '@/lib/utils';
+import { env } from '@/env';
 
 interface Props {
   searchParams: Promise<{
@@ -18,7 +19,7 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const prato = params.prato ?? 'Refeição';
   const quantidade = parseInt(params.quantidade ?? '1', 10);
   const total = parseFloat(params.total ?? '0');
-  const mbwayPhone = formatPhone(process.env.MBWAY_PHONE ?? '+351968326760');
+  const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const t = await getTranslations('ThankYou');
 
   return (

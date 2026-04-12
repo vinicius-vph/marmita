@@ -7,6 +7,7 @@ import FundraisingTracker from '@/components/public/FundraisingTracker';
 import ReservationForm from '@/components/public/ReservationForm';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { formatPhone } from '@/lib/utils';
+import { env } from '@/env';
 import type { MenuItem, FundraisingSummary } from '@/types';
 
 async function getData() {
@@ -34,7 +35,7 @@ async function getData() {
 
 export default async function HomePage() {
   const { menuItems, fundraising } = await getData();
-  const mbwayPhone = formatPhone(process.env.MBWAY_PHONE ?? '+351968326760');
+  const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const t = await getTranslations('Home');
 
   return (
