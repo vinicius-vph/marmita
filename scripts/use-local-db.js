@@ -14,14 +14,14 @@ const ENV_FILE = path.join(__dirname, '..', '.env.local');
 
 function parseSupabaseStatus(output) {
   const get = (label) => {
-    const match = output.match(new RegExp(`${label}:\\s+(.+)`));
+    const match = output.match(new RegExp(`${label}\\s*│\\s*([^│]+)`));
     return match ? match[1].trim() : null;
   };
 
   return {
-    url: get('API URL'),
-    anonKey: get('anon key'),
-    serviceRoleKey: get('service_role key'),
+    url: get('Project URL'),
+    anonKey: get('Publishable'),
+    serviceRoleKey: get('Secret'),
   };
 }
 
