@@ -51,3 +51,6 @@ AGENTS.md
 /.claude
 claude-plan.md
 supabase-schema.sql
+
+# supabase local state (docker)
+/.supabase
