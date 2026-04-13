@@ -1,0 +1,40 @@
+import { test, expect } from '@playwright/test';
+
+test.describe('Homepage', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  test('renders header with logo and title', async ({ page }) => {
+    await expect(page.getByRole('img', { name: /Igreja Baptista/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Marmita Solidária' })).toBeVisible();
+  });
+
+  test('header logo links to home', async ({ page }) => {
+    const homeLink = page.locator('header a[href="/"]');
+    await expect(homeLink).toBeVisible();
+  });
+
+  test('shows category tabs', async ({ page }) => {
+    await expect(page.getByText(/Refeições|Meals|Comidas/i)).toBeVisible();
+    await expect(page.getByText(/Café da Manhã|Breakfast|Desayuno/i)).toBeVisible();
+  });
+
+  test('footer shows MBWay payment info with logo', async ({ page }) => {
+    const footer = page.locator('footer');
+    await expect(footer.getByRole('img', { name: 'MB WAY' })).toBeVisible();
+    await expect(footer.getByText(/MBWay|mbway/i)).toBeVisible();
+  });
+
+  test('footer admin link is visible and navigates to login', async ({ page }) => {
+    const adminLink = page.locator('footer a[href*="admin"]');
+    await expect(adminLink).toBeVisible();
+    await adminLink.click();
+    await expect(page).toHaveURL(/admin/);
+  });
+
+  test('language switcher is present', async ({ page }) => {
+    await expect(page.getByText('PT')).toBeVisible();
+    await expect(page.getByText('EN')).toBeVisible();
+  });
+});
