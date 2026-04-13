@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { formatCurrency, formatPhone } from '@/lib/utils';
+import { formatCurrency, formatPhone, whatsappUrl } from '@/lib/utils';
 import { env } from '@/env';
+import MbwayQrCode from '@/components/public/MbwayQrCode';
 
 interface Props {
   searchParams: Promise<{
@@ -10,6 +11,7 @@ interface Props {
     prato?: string;
     quantidade?: string;
     total?: string;
+    categoria?: string;
   }>;
 }
 
@@ -19,13 +21,17 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const prato = params.prato ?? 'Refeição';
   const quantidade = parseInt(params.quantidade ?? '1', 10);
   const total = parseFloat(params.total ?? '0');
+  const isBreakfast = params.categoria === 'breakfast';
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
+  const waPhone = env.WHATSAPP_PHONE || env.MBWAY_PHONE;
+  const waUrl = whatsappUrl(waPhone);
+  const tHome = await getTranslations('Home');
   const t = await getTranslations('ThankYou');
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-teal-800 text-white py-5 px-4 shadow-md">
-        <div className="max-w-3xl mx-auto flex items-center gap-4">
+        <Link href="/" className="max-w-3xl mx-auto flex items-center gap-4 hover:opacity-90 transition-opacity">
           <Image
             src="/logo.jpg"
             alt="Primeira Igreja Baptista de Vila Real"
@@ -38,17 +44,19 @@ export default async function ObrigadoPage({ searchParams }: Props) {
             <h1 className="text-xl font-bold">Marmita Solidária</h1>
             <p className="text-teal-200 text-xs">Primeira Igreja Baptista de Vila Real</p>
           </div>
-        </div>
+        </Link>
       </header>
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-10">
         <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 md:p-8 space-y-6">
           <div className="text-center">
-            <div className="text-5xl mb-3">🙏</div>
+            <div className="text-5xl mb-3">{isBreakfast ? '☕' : '🙏'}</div>
             <h2 className="text-2xl font-bold text-[#1a3a3a]">
               {t('title', { name: nome })}
             </h2>
-            <p className="text-[#1a3a3a]/60 mt-1">{t('subtitle')}</p>
+            <p className="text-[#1a3a3a]/60 mt-1">
+              {isBreakfast ? t('subtitleBreakfast') : t('subtitle')}
+            </p>
           </div>
 
           <div className="bg-stone-50 rounded-xl p-4 space-y-2 text-sm">
@@ -74,6 +82,7 @@ export default async function ObrigadoPage({ searchParams }: Props) {
               <li>
                 {t('step3')}{' '}
                 <strong className="text-teal-800 text-base tracking-widest">{mbwayPhone}</strong>
+                <MbwayQrCode phone={env.MBWAY_PHONE} />
               </li>
               <li>
                 {t('step4')}{' '}
@@ -81,7 +90,11 @@ export default async function ObrigadoPage({ searchParams }: Props) {
               </li>
               <li>
                 {t('step5')}{' '}
-                <strong className="text-teal-800">{t('step5ref', { dish: prato, name: nome })}</strong>
+                <strong className="text-teal-800">
+                  {isBreakfast
+                    ? t('step5refBreakfast', { dish: prato, name: nome })
+                    : t('step5ref', { dish: prato, name: nome })}
+                </strong>
               </li>
               <li>{t('step6')}</li>
             </ol>
@@ -101,7 +114,20 @@ export default async function ObrigadoPage({ searchParams }: Props) {
       </main>
 
       <footer className="bg-teal-900 text-teal-200 py-4 px-4 text-center text-sm">
-        <p>Pagamentos via MBWay para <strong className="text-white tracking-widest">{mbwayPhone}</strong></p>
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <Image src="/mbway.png" alt="MB WAY" width={80} height={26} className="inline-block" style={{ height: 'auto' }} />
+          <span>
+            {tHome('payment')}{' '}
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-white tracking-widest hover:text-teal-300 transition-colors"
+            >
+              {mbwayPhone}
+            </a>
+          </span>
+        </div>
       </footer>
     </div>
   );

@@ -40,7 +40,7 @@ export default async function AdminMetaPage({ searchParams }: Props) {
   return (
     <div>
       <h2 className="text-xl font-bold text-stone-800 mb-6">{t('title')}</h2>
-      <GoalForm data={fundraising} />
+      <GoalForm key={category} data={fundraising} />
     </div>
   );
 }

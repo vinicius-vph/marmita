@@ -44,7 +44,8 @@
   },
   "ThankYou": {
     "title": "Thank you, {name}!",
-    "subtitle": "Your reservation has been received successfully.",
+    "subtitle": "Your meal reservation has been received successfully.",
+    "subtitleBreakfast": "Your breakfast reservation has been received successfully.",
     "dish": "Dish",
     "quantity": "Quantity",
     "total": "Total to pay",
@@ -55,9 +56,11 @@
     "step4": "Enter the amount:",
     "step5": "In the description/reference write:",
     "step5ref": "Marmita reservation {dish} {name}",
+    "step5refBreakfast": "Breakfast reservation {dish} {name}",
     "step6": "Confirm the payment",
     "disclaimer": "After payment, your reservation will be confirmed by our team. Thank you for your generosity!",
-    "back": "Back to home"
+    "back": "Back to home",
+    "qrCodeHint": "Scan to copy the number"
   },
   "AdminLogin": {
     "area": "Management Area",

@@ -15,11 +15,26 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const supabase = createAdminClient();
   const t = await getTranslations('AdminDashboard');
 
-  const { data, error } = await supabase
-    .from('reservations')
-    .select('*, menu_items!inner(name, meal_date, price)')
-    .eq('menu_items.category', category)
-    .order('created_at', { ascending: false });
+  const { data: menuItemsData } = await supabase
+    .from('menu_items')
+    .select('id')
+    .eq('category', category)
+    .order('meal_date', { ascending: false });
+
+  const menuItemIds = (menuItemsData ?? []).map((m) => m.id);
+
+  let data: Reservation[] = [];
+  let error: { message: string } | null = null;
+
+  if (menuItemIds.length > 0) {
+    const result = await supabase
+      .from('reservations')
+      .select('*, menu_items(name, meal_date, price)')
+      .in('menu_item_id', menuItemIds)
+      .order('created_at', { ascending: false });
+    data = (result.data ?? []) as Reservation[];
+    error = result.error;
+  }
 
   if (error) {
     return (

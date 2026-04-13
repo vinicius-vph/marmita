@@ -29,6 +29,12 @@ export function formatPhone(phone: string): string {
   return phone;
 }
 
+// Converte número de telefone para URL do WhatsApp: +351968326760 → https://wa.me/351968326760
+export function whatsappUrl(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  return `https://wa.me/${digits}`;
+}
+
 export function formatDateTime(dateStr: string): string {
   try {
     const date = parseISO(dateStr);

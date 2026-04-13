@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MenuItem } from '@/types';
+import { MenuItem, Category } from '@/types';
 import MenuCard from './MenuCard';
 import { formatCurrency } from '@/lib/utils';
 
-export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }) {
+export default function ReservationForm({ menuItems, category }: { menuItems: MenuItem[]; category: Category }) {
   const router = useRouter();
   const t = useTranslations('ReservationForm');
   const [selectedId, setSelectedId] = useState<string>(menuItems[0]?.id ?? '');
@@ -51,6 +51,7 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
         prato: selectedItem?.name ?? '',
         quantidade: String(quantity),
         total: String(data.total_amount),
+        categoria: category,
       });
       router.push(`/obrigado?${params.toString()}`);
     } catch {

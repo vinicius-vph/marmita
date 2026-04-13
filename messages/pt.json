@@ -44,7 +44,8 @@
   },
   "ThankYou": {
     "title": "Obrigado, {name}!",
-    "subtitle": "A sua reserva foi recebida com sucesso.",
+    "subtitle": "A sua reserva de refeição foi recebida com sucesso.",
+    "subtitleBreakfast": "A sua reserva de pequeno-almoço foi recebida com sucesso.",
     "dish": "Prato",
     "quantity": "Quantidade",
     "total": "Total a pagar",
@@ -55,9 +56,11 @@
     "step4": "Insira o valor:",
     "step5": "Na descrição/referência escreva o texto:",
     "step5ref": "Reserva de marmita {dish} {name}",
+    "step5refBreakfast": "Reserva de pequeno-almoço {dish} {name}",
     "step6": "Confirme o pagamento",
     "disclaimer": "Após o pagamento, a sua reserva será confirmada pela nossa equipa. Obrigado pela sua generosidade!",
-    "back": "Voltar ao início"
+    "back": "Voltar ao início",
+    "qrCodeHint": "Digitalize para copiar o número"
   },
   "AdminLogin": {
     "area": "Área de Gestão",

@@ -60,9 +60,11 @@ export async function PUT(
     image_url = await uploadImage(supabase, imageFile);
   }
 
+  const category = (formData.get('category') as string) || 'meals';
+
   const { data, error } = await supabase
     .from('menu_items')
-    .update({ name, description, price: parseFloat(price), meal_date, image_url })
+    .update({ name, description, price: parseFloat(price), meal_date, image_url, category })
     .eq('id', id)
     .select()
     .single();

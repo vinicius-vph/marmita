@@ -58,7 +58,7 @@ export default function CategoryTabs({
       <FundraisingTracker data={fundraising} />
 
       {items.length > 0 ? (
-        <ReservationForm menuItems={items} />
+        <ReservationForm key={tab} menuItems={items} category={tab} />
       ) : (
         <section className="text-center py-12">
           <p className="text-[#1a3a3a]/60 text-lg">

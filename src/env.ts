@@ -11,4 +11,7 @@ export const env = {
   AUTH_SECRET: requireEnv('AUTH_SECRET'),
   ADMIN_PASSWORD: requireEnv('ADMIN_PASSWORD'),
   MBWAY_PHONE: process.env.MBWAY_PHONE ?? '',
+  WHATSAPP_PHONE: process.env.WHATSAPP_PHONE ?? '',
+  INSTAGRAM_URL: process.env.INSTAGRAM_URL ?? 'https://www.instagram.com',
+  FACEBOOK_URL: process.env.FACEBOOK_URL ?? 'https://www.facebook.com',
 };

@@ -20,7 +20,7 @@ export default async function AdminMenuPage({ searchParams }: Props) {
     .select('*')
     .eq('active', true)
     .eq('category', category)
-    .order('meal_date', { ascending: true });
+    .order('meal_date', { ascending: false });
 
   if (error) {
     return (
