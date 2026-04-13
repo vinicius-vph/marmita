@@ -55,7 +55,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         {(['all', 'pending', 'paid'] as Filter[]).map((f) => (
           <button
             key={f}

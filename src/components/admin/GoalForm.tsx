@@ -6,6 +6,7 @@ import { FundraisingSummary } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 
 export default function GoalForm({ data: initial }: { data: FundraisingSummary }) {
+  const category = initial.category;
   const t = useTranslations('GoalForm');
   const [data, setData] = useState(initial);
   const [goal, setGoal] = useState(String(initial.goal));
@@ -24,13 +25,13 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
     const res = await fetch('/api/admin/meta', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal, label, manual_raised: manualRaised }),
+      body: JSON.stringify({ goal, label, manual_raised: manualRaised, category }),
     });
 
     if (res.ok) {
       const newGoal = parseFloat(goal);
       const newRaised = parseFloat(manualRaised);
-      setData({ goal: newGoal, label, raised: newRaised, remaining: newGoal - newRaised });
+      setData({ category, goal: newGoal, label, raised: newRaised, remaining: newGoal - newRaised });
       setMessage(t('success'));
     } else {
       const d = await res.json();

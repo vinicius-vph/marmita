@@ -27,16 +27,16 @@ export default function FundraisingTracker({ data }: { data: FundraisingSummary 
 
       <div className="grid grid-cols-3 gap-2 mt-4">
         <div className="bg-white rounded-xl p-2 md:p-3 text-center shadow-sm">
-          <p className="text-[10px] md:text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">{t('raised')}</p>
-          <p className="text-sm md:text-lg font-bold text-green-700 break-all">{formatCurrency(raised)}</p>
+          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">{t('raised')}</p>
+          <p className="text-sm md:text-base font-bold text-green-700 break-all">{formatCurrency(raised)}</p>
         </div>
         <div className="bg-white rounded-xl p-2 md:p-3 text-center shadow-sm">
-          <p className="text-[10px] md:text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">{t('goal')}</p>
-          <p className="text-sm md:text-lg font-bold text-teal-700 break-all">{formatCurrency(goal)}</p>
+          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">{t('goal')}</p>
+          <p className="text-sm md:text-base font-bold text-teal-700 break-all">{formatCurrency(goal)}</p>
         </div>
         <div className="bg-white rounded-xl p-2 md:p-3 text-center shadow-sm">
-          <p className="text-[10px] md:text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">{t('missing')}</p>
-          <p className="text-sm md:text-lg font-bold text-[#1a3a3a] break-all">
+          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide mb-1">{t('missing')}</p>
+          <p className="text-sm md:text-base font-bold text-[#1a3a3a] break-all">
             {goalReached ? t('goalReachedShort') : formatCurrency(remaining)}
           </p>
         </div>

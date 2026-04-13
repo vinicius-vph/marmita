@@ -3,15 +3,16 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { MenuItem } from '@/types';
+import { MenuItem, Category } from '@/types';
 
 interface Props {
   editing: MenuItem | null;
+  category: Category;
   onSaved: () => void;
   onCancel: () => void;
 }
 
-export default function MenuForm({ editing, onSaved, onCancel }: Props) {
+export default function MenuForm({ editing, category, onSaved, onCancel }: Props) {
   const t = useTranslations('MenuForm');
   const [name, setName] = useState(editing?.name ?? '');
   const [description, setDescription] = useState(editing?.description ?? '');
@@ -52,6 +53,7 @@ export default function MenuForm({ editing, onSaved, onCancel }: Props) {
     formData.append('description', description);
     formData.append('price', price);
     formData.append('meal_date', mealDate);
+    formData.append('category', category);
     if (imageFile) {
       formData.append('image', imageFile);
     }
@@ -85,7 +87,7 @@ export default function MenuForm({ editing, onSaved, onCancel }: Props) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            placeholder="Ex: Frango assado com arroz"
+            placeholder={category === 'breakfast' ? t('namePlaceholderBreakfast') : t('namePlaceholderMeals')}
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
         </div>

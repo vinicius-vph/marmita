@@ -74,14 +74,18 @@ export default function ReservationForm({ menuItems }: { menuItems: MenuItem[] }
       <div>
         <p className="text-sm font-medium text-[#1a3a3a]/70 mb-3">{t('chooseDish')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {menuItems.map((item) => (
-            <MenuCard
-              key={item.id}
-              item={item}
-              selected={selectedId === item.id}
-              onSelect={setSelectedId}
-            />
-          ))}
+          {menuItems.map((item, index) => {
+            const isLastAlone = menuItems.length % 2 !== 0 && index === menuItems.length - 1;
+            return (
+              <div key={item.id} className={isLastAlone ? 'sm:col-span-2' : undefined}>
+                <MenuCard
+                  item={item}
+                  selected={selectedId === item.id}
+                  onSelect={setSelectedId}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 

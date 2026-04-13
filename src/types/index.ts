@@ -1,3 +1,5 @@
+export type Category = 'meals' | 'breakfast';
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -7,6 +9,7 @@ export interface MenuItem {
   active: boolean;
   image_url: string | null;
   created_at: string;
+  category: Category;
 }
 
 export interface Reservation {
@@ -23,6 +26,7 @@ export interface Reservation {
 }
 
 export interface FundraisingSummary {
+  category: Category;
   goal: number;
   label: string;
   raised: number;

@@ -1,7 +1,8 @@
+import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { getAdminSession } from '@/lib/auth';
-import LogoutButton from '@/components/admin/LogoutButton';
+import AdminNav from '@/components/admin/AdminNav';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -11,26 +12,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen flex flex-col bg-stone-100">
       <header className="bg-teal-900 text-white px-4 py-3 shadow">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <Link href="/" className="font-bold text-base text-teal-100 hover:text-white transition-colors">
             {t('title')}
           </Link>
 
           <div className="flex items-center gap-4">
             {isLoggedIn && (
-              <nav className="flex items-center gap-4 text-sm">
-                <Link href="/admin" className="hover:text-teal-300 transition-colors">
-                  {t('reservations')}
-                </Link>
-                <Link href="/admin/menu" className="hover:text-teal-300 transition-colors">
-                  {t('menu')}
-                </Link>
-                <Link href="/admin/meta" className="hover:text-teal-300 transition-colors">
-                  {t('goal')}
-                </Link>
-                <span className="text-teal-700">|</span>
-                <LogoutButton />
-              </nav>
+              <Suspense>
+                <AdminNav />
+              </Suspense>
             )}
             <LanguageSwitcher />
           </div>

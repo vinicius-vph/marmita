@@ -1,11 +1,17 @@
 import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import MenuManager from '@/components/admin/MenuManager';
-import type { MenuItem } from '@/types';
+import type { MenuItem, Category } from '@/types';
 
 export const revalidate = 0;
 
-export default async function AdminMenuPage() {
+interface Props {
+  searchParams: Promise<{ category?: string }>;
+}
+
+export default async function AdminMenuPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const category: Category = params.category === 'breakfast' ? 'breakfast' : 'meals';
   const supabase = createAdminClient();
   const t = await getTranslations('AdminMenu');
 
@@ -13,6 +19,7 @@ export default async function AdminMenuPage() {
     .from('menu_items')
     .select('*')
     .eq('active', true)
+    .eq('category', category)
     .order('meal_date', { ascending: true });
 
   if (error) {
@@ -26,7 +33,7 @@ export default async function AdminMenuPage() {
   return (
     <div>
       <h2 className="text-xl font-bold text-stone-800 mb-6">{t('title')}</h2>
-      <MenuManager items={(data ?? []) as MenuItem[]} />
+      <MenuManager key={category} items={(data ?? []) as MenuItem[]} category={category} />
     </div>
   );
 }

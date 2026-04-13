@@ -18,12 +18,16 @@ async function uploadImage(supabase: ReturnType<typeof createAdminClient>, file:
   return data.publicUrl;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const category = searchParams.get('category') ?? 'meals';
+
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('menu_items')
     .select('*')
     .eq('active', true)
+    .eq('category', category)
     .order('meal_date', { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -55,9 +59,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const category = (formData.get('category') as string) || 'meals';
+
   const { data, error } = await supabase
     .from('menu_items')
-    .insert({ name, description, price: parseFloat(price), meal_date, image_url })
+    .insert({ name, description, price: parseFloat(price), meal_date, image_url, category })
     .select()
     .single();
 

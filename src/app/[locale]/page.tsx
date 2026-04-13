@@ -3,8 +3,7 @@ export const revalidate = 0;
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
-import FundraisingTracker from '@/components/public/FundraisingTracker';
-import ReservationForm from '@/components/public/ReservationForm';
+import CategoryTabs from '@/components/public/CategoryTabs';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { formatPhone } from '@/lib/utils';
 import { env } from '@/env';
@@ -13,28 +12,35 @@ import type { MenuItem, FundraisingSummary } from '@/types';
 async function getData() {
   const supabase = createAdminClient();
 
-  const [menuRes, fundraisingRes] = await Promise.all([
-    supabase
-      .from('menu_items')
-      .select('*')
-      .eq('active', true)
-      .order('meal_date', { ascending: true }),
-    supabase.from('fundraising_summary').select('*').single(),
+  const [mealsRes, breakfastRes, mealsFundRes, breakfastFundRes] = await Promise.all([
+    supabase.from('menu_items').select('*').eq('active', true).eq('category', 'meals').order('meal_date', { ascending: true }),
+    supabase.from('menu_items').select('*').eq('active', true).eq('category', 'breakfast').order('meal_date', { ascending: true }),
+    supabase.from('fundraising_summary').select('*').eq('category', 'meals').single(),
+    supabase.from('fundraising_summary').select('*').eq('category', 'breakfast').single(),
   ]);
 
   return {
-    menuItems: (menuRes.data ?? []) as MenuItem[],
-    fundraising: (fundraisingRes.data ?? {
+    meals: (mealsRes.data ?? []) as MenuItem[],
+    breakfast: (breakfastRes.data ?? []) as MenuItem[],
+    mealsFundraising: (mealsFundRes.data ?? {
+      category: 'meals' as const,
       goal: 5000,
       label: 'Obras do Templo',
       raised: 0,
       remaining: 5000,
     }) as FundraisingSummary,
+    breakfastFundraising: (breakfastFundRes.data ?? {
+      category: 'breakfast' as const,
+      goal: 1000,
+      label: 'Café da Manhã Solidário',
+      raised: 0,
+      remaining: 1000,
+    }) as FundraisingSummary,
   };
 }
 
 export default async function HomePage() {
-  const { menuItems, fundraising } = await getData();
+  const { meals, breakfast, mealsFundraising, breakfastFundraising } = await getData();
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const t = await getTranslations('Home');
 
@@ -67,19 +73,13 @@ export default async function HomePage() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8 space-y-10">
-        {/* Fundraising progress */}
-        <FundraisingTracker data={fundraising} />
-
-        {/* Menu + Reservation */}
-        {menuItems.length > 0 ? (
-          <ReservationForm menuItems={menuItems} />
-        ) : (
-          <section className="text-center py-12">
-            <p className="text-[#1a3a3a]/60 text-lg">{t('noMeals')}</p>
-            <p className="text-[#1a3a3a]/40 text-sm mt-2">{t('comeBackSoon')}</p>
-          </section>
-        )}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
+        <CategoryTabs
+          meals={meals}
+          breakfast={breakfast}
+          mealsFundraising={mealsFundraising}
+          breakfastFundraising={breakfastFundraising}
+        />
       </main>
 
       {/* Footer */}

@@ -1,17 +1,24 @@
 import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import ReservationsTable from '@/components/admin/ReservationsTable';
-import type { Reservation } from '@/types';
+import type { Reservation, Category } from '@/types';
 
 export const revalidate = 0;
 
-export default async function AdminDashboard() {
+interface Props {
+  searchParams: Promise<{ category?: string }>;
+}
+
+export default async function AdminDashboard({ searchParams }: Props) {
+  const params = await searchParams;
+  const category: Category = params.category === 'breakfast' ? 'breakfast' : 'meals';
   const supabase = createAdminClient();
   const t = await getTranslations('AdminDashboard');
 
   const { data, error } = await supabase
     .from('reservations')
-    .select('*, menu_items(name, meal_date, price)')
+    .select('*, menu_items!inner(name, meal_date, price)')
+    .eq('menu_items.category', category)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -25,7 +32,7 @@ export default async function AdminDashboard() {
   return (
     <div>
       <h2 className="text-xl font-bold text-stone-800 mb-6">{t('title')}</h2>
-      <ReservationsTable reservations={(data ?? []) as Reservation[]} />
+      <ReservationsTable key={category} reservations={(data ?? []) as Reservation[]} />
     </div>
   );
 }

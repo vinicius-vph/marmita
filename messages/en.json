@@ -4,9 +4,14 @@
     "subtitle": "Primeira Igreja Baptista de Vila Real",
     "tagline": "Every meal is a blessing for the works of our temple",
     "noMeals": "No meals available this week.",
+    "noBreakfast": "No breakfast options available this week.",
     "comeBackSoon": "Come back soon!",
     "payment": "Payments via MBWay to",
     "adminLink": "Management area"
+  },
+  "CategoryTabs": {
+    "meals": "🍽️ Meals",
+    "breakfast": "☕ Breakfast"
   },
   "ReservationForm": {
     "title": "Make a Reservation",
@@ -101,6 +106,8 @@
     "editTitle": "Edit Dish",
     "addTitle": "Add Dish",
     "name": "Name *",
+    "namePlaceholderMeals": "E.g.: Roast chicken with rice",
+    "namePlaceholderBreakfast": "E.g.: Toast with juice",
     "description": "Description",
     "price": "Price (€) *",
     "date": "Meal date *",

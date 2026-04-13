@@ -25,7 +25,7 @@ export default function LanguageSwitcher() {
         <button
           key={loc}
           onClick={() => switchLocale(loc)}
-          className={`text-xs font-semibold px-2 py-0.5 rounded transition-colors ${
+          className={`text-xs font-semibold px-3 py-2 rounded transition-colors ${
             locale === loc
               ? 'bg-white/20 text-white'
               : 'text-white/50 hover:text-white hover:bg-white/10'

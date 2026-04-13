@@ -7,7 +7,7 @@ export async function PUT(req: NextRequest) {
   const isAdmin = await getAdminSession();
   if (!isAdmin) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
-  const { goal, label, manual_raised } = await req.json();
+  const { goal, label, manual_raised, category } = await req.json();
   if (!goal || isNaN(parseFloat(goal))) {
     return NextResponse.json({ error: 'Objetivo inválido' }, { status: 400 });
   }
@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest) {
   const { data, error } = await supabase
     .from('fundraising_config')
     .update(update)
-    .eq('id', 1)
+    .eq('category', category ?? 'meals')
     .select()
     .single();
 

@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MenuItem } from '@/types';
+import { MenuItem, Category } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import MenuForm from './MenuForm';
 
-export default function MenuManager({ items: initial }: { items: MenuItem[] }) {
+export default function MenuManager({ items: initial, category }: { items: MenuItem[]; category: Category }) {
   const router = useRouter();
   const t = useTranslations('MenuManager');
   const [items, setItems] = useState(initial);
@@ -30,7 +30,7 @@ export default function MenuManager({ items: initial }: { items: MenuItem[] }) {
     setShowForm(false);
     setEditing(null);
     router.refresh();
-    fetch('/api/menu')
+    fetch(`/api/menu?category=${category}`)
       .then((r) => r.json())
       .then(setItems)
       .catch(() => {});
@@ -41,6 +41,7 @@ export default function MenuManager({ items: initial }: { items: MenuItem[] }) {
       {(showForm || editing) ? (
         <MenuForm
           editing={editing}
+          category={category}
           onSaved={handleSaved}
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />
