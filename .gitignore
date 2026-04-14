@@ -35,6 +35,11 @@ yarn-error.log*
 .env.local
 .env.example
 .env.*.local
+.env.prod
+.env.staging
+.env.production
+.env.*.prod
+.env.*.production
 
 # vercel
 .vercel

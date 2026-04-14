@@ -89,7 +89,7 @@ export default async function HomePage() {
       <footer className="bg-teal-900 text-teal-200 py-6 px-4 text-center text-sm">
         {/* MBWay payment info */}
         <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
-          <Image src="/mbway.png" alt="MB WAY" width={80} height={26} className="inline-block" style={{ width: 'auto', height: 'auto' }} />
+          <Image src="/mbway.png" alt="MB WAY" width={80} height={26} loading="eager" className="inline-block" style={{ width: 'auto', height: 'auto' }} />
           <span>
             {t('payment')}{' '}
             <a

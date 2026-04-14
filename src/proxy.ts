@@ -11,7 +11,6 @@ const getSecret = () => new TextEncoder().encode(env.AUTH_SECRET);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Detectar locale no path (en|es) e remover para verificar rota
   const localeMatch = pathname.match(/^\/(en|es)(\/|$)/);
   const locale = localeMatch ? localeMatch[1] : '';
   const stripped = locale ? pathname.slice(locale.length + 1) || '/' : pathname;
@@ -26,10 +25,8 @@ export async function proxy(request: NextRequest) {
           await jwtVerify(token, getSecret());
           return NextResponse.redirect(new URL(`${base}/admin`, request.url));
         } catch {
-          // token inválido — deixa aceder ao login normalmente
         }
       }
-      // intlMiddleware faz o rewrite interno para [locale]/admin/login
       return intlMiddleware(request);
     }
 
@@ -39,7 +36,6 @@ export async function proxy(request: NextRequest) {
 
     try {
       await jwtVerify(token, getSecret());
-      // intlMiddleware faz o rewrite interno para [locale]/admin/...
       return intlMiddleware(request);
     } catch {
       return NextResponse.redirect(new URL(`${base}/admin/login`, request.url));

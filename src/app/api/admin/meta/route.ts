@@ -1,35 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/server';
-import { getAdminSession } from '@/lib/auth';
+import { getAdminSession, checkOrigin } from '@/lib/auth';
+import { logAdminAction } from '@/lib/audit';
+import type { Category } from '@/types';
+
+const VALID_CATEGORIES: Category[] = ['meals', 'breakfast'];
+const MAX_FINANCIAL_VALUE = 1_000_000;
+const MAX_LABEL_LENGTH = 255;
+const MAX_BODY = 2_000; // 2 KB is more than enough for this payload
 
 export async function PUT(req: NextRequest) {
-  const isAdmin = await getAdminSession();
-  if (!isAdmin) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  const session = await getAdminSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { goal, label, manual_raised, category } = await req.json();
-  if (!goal || isNaN(parseFloat(goal))) {
-    return NextResponse.json({ error: 'Objetivo inválido' }, { status: 400 });
+  // SEC-08: reject cross-origin requests
+  if (!checkOrigin(req)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  // SEC-13: enforce body size limit before parsing
+  const text = await req.text();
+  if (text.length > MAX_BODY) {
+    return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const { goal, label, manual_raised, category } = body;
+
+  const goalNum = parseFloat(goal as string);
+  if (!goal || isNaN(goalNum) || goalNum <= 0 || goalNum > MAX_FINANCIAL_VALUE) {
+    return NextResponse.json({ error: 'Invalid goal' }, { status: 400 });
+  }
+
+  if (!VALID_CATEGORIES.includes(category as Category)) {
+    return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
   }
 
   const supabase = createAdminClient();
   const update: Record<string, unknown> = {
-    goal: parseFloat(goal),
+    goal: goalNum,
     updated_at: new Date().toISOString(),
   };
-  if (label) update.label = label;
-  if (manual_raised !== undefined && !isNaN(parseFloat(manual_raised))) {
-    update.manual_raised = parseFloat(manual_raised);
+
+  if (label !== undefined) {
+    if (typeof label !== 'string' || label.trim().length === 0 || label.length > MAX_LABEL_LENGTH) {
+      return NextResponse.json({ error: 'Invalid label' }, { status: 400 });
+    }
+    update.label = label.trim();
+  }
+
+  if (manual_raised !== undefined) {
+    const raisedNum = parseFloat(manual_raised as string);
+    if (isNaN(raisedNum) || raisedNum < 0 || raisedNum > MAX_FINANCIAL_VALUE) {
+      return NextResponse.json({ error: 'Invalid manual raised value' }, { status: 400 });
+    }
+    update.manual_raised = raisedNum;
   }
 
   const { data, error } = await supabase
     .from('fundraising_config')
     .update(update)
-    .eq('category', category ?? 'meals')
+    .eq('category', category)
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // SEC-15: audit log
+  await logAdminAction('fundraising.update', req, category as string, {
+    goal: goalNum,
+    ...(label !== undefined && { label }),
+    ...(manual_raised !== undefined && { manual_raised }),
+  });
 
   revalidatePath('/');
   return NextResponse.json(data);
