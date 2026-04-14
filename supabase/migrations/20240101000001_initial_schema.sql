@@ -2,7 +2,6 @@
 -- 001 — Schema inicial
 -- ================================================================
 
--- Pratos do menu semanal
 CREATE TABLE menu_items (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name        TEXT NOT NULL,
@@ -13,7 +12,6 @@ CREATE TABLE menu_items (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Reservas dos clientes
 CREATE TABLE reservations (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   menu_item_id    UUID NOT NULL REFERENCES menu_items(id) ON DELETE RESTRICT,
@@ -26,7 +24,6 @@ CREATE TABLE reservations (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Configuração da campanha (tabela de linha única)
 CREATE TABLE fundraising_config (
   id         INTEGER PRIMARY KEY DEFAULT 1,
   goal       NUMERIC(10,2) NOT NULL DEFAULT 5000.00,
@@ -37,7 +34,6 @@ CREATE TABLE fundraising_config (
 
 INSERT INTO fundraising_config (id, goal, label) VALUES (1, 5000.00, 'Obras do Templo');
 
--- View do resumo da angariação
 CREATE VIEW fundraising_summary AS
 SELECT
   fc.goal,
@@ -48,7 +44,6 @@ FROM fundraising_config fc
 LEFT JOIN reservations r ON true
 GROUP BY fc.goal, fc.label;
 
--- Row Level Security
 ALTER TABLE menu_items         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reservations       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fundraising_config ENABLE ROW LEVEL SECURITY;
@@ -56,7 +51,6 @@ ALTER TABLE fundraising_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read active menu" ON menu_items
   FOR SELECT USING (active = true);
 
--- Storage: bucket público para imagens dos pratos
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('menu-images', 'menu-images', true)
 ON CONFLICT (id) DO NOTHING;
