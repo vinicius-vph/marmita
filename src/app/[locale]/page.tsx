@@ -45,6 +45,7 @@ export default async function HomePage() {
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const waPhone = env.WHATSAPP_PHONE || env.MBWAY_PHONE;
   const waUrl = whatsappUrl(waPhone);
+  const mbwayWaUrl = whatsappUrl(mbwayPhone);
   const t = await getTranslations('Home');
 
   return (
@@ -93,12 +94,28 @@ export default async function HomePage() {
           <span>
             {t('payment')}{' '}
             <a
-              href={waUrl}
+              href={mbwayWaUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-white tracking-widest hover:text-teal-300 transition-colors"
             >
               {mbwayPhone}
+            </a>
+          </span>
+
+        </div>
+
+        <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
+          {/* <Image src="/mbway.png" alt="MB WAY" width={80} height={26} loading="eager" className="inline-block" style={{ width: 'auto', height: 'auto' }} /> */}
+          <span>
+            {t('info')}{' '}
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-white tracking-widest hover:text-teal-300 transition-colors"
+            >
+              {waPhone}
             </a>
           </span>
         </div>
