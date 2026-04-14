@@ -11,7 +11,8 @@ test.describe('Homepage', () => {
   });
 
   test('header logo links to home', async ({ page }) => {
-    const homeLink = page.locator('header a[href="/"]');
+    // next-intl Link renders href as "/" (PT default) or "/en", "/es" for other locales
+    const homeLink = page.locator('header a').first();
     await expect(homeLink).toBeVisible();
   });
 
@@ -34,7 +35,8 @@ test.describe('Homepage', () => {
   });
 
   test('language switcher is present', async ({ page }) => {
-    await expect(page.getByText('PT')).toBeVisible();
-    await expect(page.getByText('EN')).toBeVisible();
+    // Use exact:true to avoid substring matches (e.g. menu item buttons containing "EN")
+    await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
   });
 });
