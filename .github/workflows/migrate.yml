@@ -1,4 +1,4 @@
-name: Migrate Database
+name: Migrate App Database
 
 on:
   push:
