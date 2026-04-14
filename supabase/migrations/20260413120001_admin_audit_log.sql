@@ -1,11 +1,8 @@
--- Admin audit log table (SEC-15)
--- Records every administrative action with action type, affected entity, and IP address.
-
 CREATE TABLE IF NOT EXISTS admin_audit_log (
   id         UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  action     TEXT        NOT NULL,   -- e.g. 'menu.create', 'reservation.confirm'
-  entity_id  TEXT,                   -- ID of the affected resource (nullable)
-  payload    JSONB,                  -- relevant context without sensitive data
+  action     TEXT        NOT NULL,
+  entity_id  TEXT,
+  payload    JSONB,                  
   ip_address TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
