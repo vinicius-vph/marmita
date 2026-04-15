@@ -45,12 +45,10 @@ export default async function HomePage() {
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const waPhone = env.WHATSAPP_PHONE || env.MBWAY_PHONE;
   const waUrl = whatsappUrl(waPhone);
-  const mbwayWaUrl = whatsappUrl(mbwayPhone);
   const t = await getTranslations('Home');
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
       <header className="bg-teal-800 text-white py-5 px-4 shadow-md">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity">
@@ -76,7 +74,6 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
         <CategoryTabs
           meals={meals}
@@ -86,41 +83,31 @@ export default async function HomePage() {
         />
       </main>
 
-      {/* Footer */}
       <footer className="bg-teal-900 text-teal-200 py-6 px-4 text-center text-sm">
-        {/* MBWay payment info */}
         <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
           <Image src="/mbway.png" alt="MB WAY" width={80} height={26} loading="eager" className="inline-block" style={{ width: 'auto', height: 'auto' }} />
           <span>
             {t('payment')}{' '}
-            <a
-              href={mbwayWaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-bold text-white tracking-widest hover:text-teal-300 transition-colors"
-            >
+            <span className="font-bold text-white tracking-widest hover:text-teal-300 transition-colors">
               {mbwayPhone}
-            </a>
+            </span>
           </span>
 
         </div>
 
         <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
-          {/* <Image src="/mbway.png" alt="MB WAY" width={80} height={26} loading="eager" className="inline-block" style={{ width: 'auto', height: 'auto' }} /> */}
           <span>
-            {t('info')}{' '}
             <a
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-white tracking-widest hover:text-teal-300 transition-colors"
-            >
-              {waPhone}
+              >
+              {t('info')}{' '}
             </a>
           </span>
         </div>
 
-        {/* Social media */}
         {(env.INSTAGRAM_URL || env.FACEBOOK_URL) && (
           <div className="flex items-center justify-center gap-4 mb-3">
             {env.INSTAGRAM_URL && (
@@ -152,7 +139,6 @@ export default async function HomePage() {
           </div>
         )}
 
-        {/* Admin link */}
         <p>
           <Link
             href="/admin/login"
