@@ -2,61 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { UUID_REGEX, VALID_CATEGORIES } from '@/lib/constants';
+import { uploadImage, deleteImage } from '@/lib/image-upload';
 import type { Category } from '@/types';
-
-const BUCKET = 'menu-images';
-const MAX_SIZE = 2 * 1024 * 1024;
-const VALID_CATEGORIES: Category[] = ['meals', 'breakfast'];
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-const ALLOWED_MIME_TYPES: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-};
-
-function isValidImageBytes(bytes: Uint8Array, mimeType: string): boolean {
-  if (mimeType === 'image/jpeg') return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-  if (mimeType === 'image/png') return bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
-  if (mimeType === 'image/webp') return bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50;
-  return false;
-}
-
-async function uploadImage(
-  supabase: ReturnType<typeof createAdminClient>,
-  file: File
-): Promise<{ url: string | null; error?: string }> {
-  if (file.size > MAX_SIZE) return { url: null, error: 'File too large (max 2 MB)' };
-
-  const ext = ALLOWED_MIME_TYPES[file.type];
-  if (!ext) return { url: null, error: 'Invalid file type' };
-
-  const buffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-  if (!isValidImageBytes(bytes, file.type)) return { url: null, error: 'Invalid file type' };
-
-  const fileName = `${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from(BUCKET).upload(fileName, file, {
-    contentType: file.type,
-    upsert: false,
-  });
-  if (error) return { url: null };
-
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(fileName);
-  return { url: data.publicUrl };
-}
-
-function fileNameFromUrl(url: string): string | null {
-  try {
-    const fileName = new URL(url).pathname.split('/').pop() ?? null;
-    if (!fileName) return null;
-    const nameWithoutExt = fileName.split('.')[0];
-    if (!UUID_REGEX.test(nameWithoutExt)) return null;
-    return fileName;
-  } catch {
-    return null;
-  }
-}
 
 export async function PUT(
   req: NextRequest,
@@ -65,7 +13,6 @@ export async function PUT(
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // SEC-08: reject cross-origin requests
   if (!checkOrigin(req)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -94,10 +41,7 @@ export async function PUT(
 
   if (imageFile instanceof File && imageFile.size > 0) {
     if (typeof existingImageUrl === 'string' && existingImageUrl) {
-      const oldFileName = fileNameFromUrl(existingImageUrl);
-      if (oldFileName) {
-        await supabase.storage.from(BUCKET).remove([oldFileName]);
-      }
+      await deleteImage(supabase, existingImageUrl);
     }
     const result = await uploadImage(supabase, imageFile);
     if (result.error) {
@@ -122,7 +66,6 @@ export async function PUT(
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // SEC-15: audit log
   await logAdminAction('menu.update', req, id, {
     ...(typeof name === 'string' && { name: name.trim() }),
     category,
@@ -138,7 +81,6 @@ export async function DELETE(
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // SEC-08: reject cross-origin requests
   if (!checkOrigin(req)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -157,10 +99,7 @@ export async function DELETE(
     .single();
 
   if (item?.image_url) {
-    const fileName = fileNameFromUrl(item.image_url);
-    if (fileName) {
-      await supabase.storage.from(BUCKET).remove([fileName]);
-    }
+    await deleteImage(supabase, item.image_url);
   }
 
   const { error } = await supabase
@@ -170,7 +109,6 @@ export async function DELETE(
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // SEC-15: audit log
   await logAdminAction('menu.delete', req, id);
 
   return NextResponse.json({ success: true });

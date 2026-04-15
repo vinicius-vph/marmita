@@ -61,7 +61,21 @@
     "step6": "Confirm the payment",
     "disclaimer": "After payment, your reservation will be confirmed by our team. Thank you for your generosity!",
     "back": "Back to home",
-    "qrCodeHint": "Scan to copy the number"
+    "qrCodeHint": "Scan to copy the number",
+    "tapToOpen": "Tap to open",
+    "sendMoney": "Send Money",
+    "requestMoney": "Request Money",
+    "history": "History",
+    "settings": "Settings",
+    "mbwayNumber": "MBWay Number",
+    "amountToSend": "Amount to send",
+    "reference": "Reference",
+    "sent": "Sent!",
+    "paused": "Paused",
+    "autoAdvancing": "Auto-advancing",
+    "previousStep": "Previous step",
+    "nextStep": "Next step",
+    "stepN": "Step {n}"
   },
   "AdminLogin": {
     "area": "Management Area",
@@ -104,7 +118,9 @@
     "empty": "No dishes on the menu. Add one above.",
     "edit": "Edit",
     "remove": "Remove",
-    "confirmRemove": "Remove this dish from the menu?"
+    "confirmRemove": "Are you sure?",
+    "confirmYes": "Yes, remove",
+    "confirmNo": "Cancel"
   },
   "MenuForm": {
     "editTitle": "Edit Dish",

@@ -54,8 +54,8 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
           <p className="text-xl font-bold text-teal-700">{formatCurrency(data.goal)}</p>
         </div>
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-4">
-          <p className="text-xs text-[#1a3a3a]/50 uppercase tracking-wide">{t('missing')}</p>
-          <p className="text-xl font-bold text-[#1a3a3a]">{formatCurrency(Math.max(0, data.remaining))}</p>
+          <p className="text-xs text-foreground/50 uppercase tracking-wide">{t('missing')}</p>
+          <p className="text-xl font-bold text-foreground">{formatCurrency(Math.max(0, data.remaining))}</p>
         </div>
       </div>
 
@@ -66,14 +66,14 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <p className="text-xs text-center text-[#1a3a3a]/50 mt-1">{t('percentage', { value: percentage })}</p>
+        <p className="text-xs text-center text-foreground/50 mt-1">{t('percentage', { value: percentage })}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm space-y-4">
-        <h3 className="font-bold text-[#1a3a3a]">{t('updateTitle')}</h3>
+        <h3 className="font-bold text-foreground">{t('updateTitle')}</h3>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('campaign')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('campaign')}</label>
           <input
             type="text"
             value={label}
@@ -83,7 +83,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('goalAmount')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('goalAmount')}</label>
           <input
             type="number"
             step="0.01"
@@ -96,7 +96,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('raisedAmount')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('raisedAmount')}</label>
           <input
             type="number"
             step="0.01"
@@ -105,7 +105,7 @@ export default function GoalForm({ data: initial }: { data: FundraisingSummary }
             onChange={(e) => setManualRaised(e.target.value)}
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
-          <p className="text-xs text-[#1a3a3a]/40 mt-1">{t('hint')}</p>
+          <p className="text-xs text-foreground/40 mt-1">{t('hint')}</p>
         </div>
 
         {error && <p className="text-red-600 text-sm bg-red-50 rounded-lg px-3 py-2">{error}</p>}

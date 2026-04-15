@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
+import { VALID_CATEGORIES } from '@/lib/constants';
 import type { Category } from '@/types';
-
-const VALID_CATEGORIES: Category[] = ['meals', 'breakfast'];
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

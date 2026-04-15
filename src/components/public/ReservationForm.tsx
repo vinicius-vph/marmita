@@ -62,7 +62,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
 
   if (menuItems.length === 0) {
     return (
-      <div className="text-center py-8 text-[#1a3a3a]/50">
+      <div className="text-center py-8 text-foreground/50">
         {t('noMeals')}
       </div>
     );
@@ -70,10 +70,10 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
 
   return (
     <section id="reserva" className="space-y-6">
-      <h2 className="text-2xl font-bold text-[#1a3a3a]">{t('title')}</h2>
+      <h2 className="text-2xl font-bold text-foreground">{t('title')}</h2>
 
       <div>
-        <p className="text-sm font-medium text-[#1a3a3a]/70 mb-3">{t('chooseDish')}</p>
+        <p className="text-sm font-medium text-foreground/70 mb-3">{t('chooseDish')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {menuItems.map((item, index) => {
             const isLastAlone = menuItems.length % 2 !== 0 && index === menuItems.length - 1;
@@ -83,6 +83,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
                   item={item}
                   selected={selectedId === item.id}
                   onSelect={setSelectedId}
+                  priority={index === 0}
                 />
               </div>
             );
@@ -92,14 +93,14 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-[#1a3a3a] mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
             {t('fullName')}
           </label>
           <input
             id="name"
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => { setName(e.target.value); setError(''); }}
             placeholder="Maria Silva"
             required
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
@@ -107,14 +108,14 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-[#1a3a3a] mb-1">
+          <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1">
             {t('phone')}
           </label>
           <input
             id="phone"
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => { setPhone(e.target.value); setError(''); }}
             placeholder="912 345 678"
             required
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
@@ -122,22 +123,22 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
         </div>
 
         <div>
-          <label htmlFor="quantity" className="block text-sm font-medium text-[#1a3a3a] mb-1">
+          <label htmlFor="quantity" className="block text-sm font-medium text-foreground mb-1">
             {t('quantity')}
           </label>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="w-9 h-9 rounded-full border border-stone-300 text-lg font-bold text-[#1a3a3a]/60 hover:bg-stone-100 flex items-center justify-center"
+              className="w-9 h-9 rounded-full border border-stone-300 text-lg font-bold text-foreground/60 hover:bg-stone-100 flex items-center justify-center"
             >
               −
             </button>
-            <span className="text-xl font-bold text-[#1a3a3a] w-8 text-center">{quantity}</span>
+            <span className="text-xl font-bold text-foreground w-8 text-center">{quantity}</span>
             <button
               type="button"
               onClick={() => setQuantity((q) => Math.min(20, q + 1))}
-              className="w-9 h-9 rounded-full border border-stone-300 text-lg font-bold text-[#1a3a3a]/60 hover:bg-stone-100 flex items-center justify-center"
+              className="w-9 h-9 rounded-full border border-stone-300 text-lg font-bold text-foreground/60 hover:bg-stone-100 flex items-center justify-center"
             >
               +
             </button>
@@ -146,7 +147,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
 
         {selectedItem && (
           <div className="bg-teal-50 rounded-lg p-3 text-sm">
-            <span className="text-[#1a3a3a]/70">{t('totalLabel')}</span>
+            <span className="text-foreground/70">{t('totalLabel')}</span>
             <span className="font-bold text-teal-800 text-base">{formatCurrency(total)}</span>
           </div>
         )}

@@ -1,7 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/server';
 
-// SEC-15: fire-and-forget audit log for admin actions.
-// Failures are swallowed so they never interrupt the main response.
 export async function logAdminAction(
   action: string,
   req: Request,
@@ -22,6 +20,5 @@ export async function logAdminAction(
       ip_address: ip,
     });
   } catch {
-    // Audit failures must never break the main flow
   }
 }

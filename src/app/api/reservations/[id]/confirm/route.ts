@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
-
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { UUID_REGEX } from '@/lib/constants';
 
 export async function PATCH(
   req: NextRequest,
@@ -12,7 +11,6 @@ export async function PATCH(
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // SEC-08: reject cross-origin requests
   if (!checkOrigin(req)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -35,7 +33,6 @@ export async function PATCH(
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // SEC-15: audit log
   await logAdminAction('reservation.confirm', req, id, { paid_at: paidAt });
 
   return NextResponse.json(data);

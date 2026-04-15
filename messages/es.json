@@ -61,7 +61,21 @@
     "step6": "Confirme el pago",
     "disclaimer": "Después del pago, su reserva será confirmada por nuestro equipo. ¡Gracias por su generosidad!",
     "back": "Volver al inicio",
-    "qrCodeHint": "Escanee para copiar el número"
+    "qrCodeHint": "Escanee para copiar el número",
+    "tapToOpen": "Toque para abrir",
+    "sendMoney": "Enviar Dinero",
+    "requestMoney": "Pedir Dinero",
+    "history": "Historial",
+    "settings": "Configuración",
+    "mbwayNumber": "Número MBWay",
+    "amountToSend": "Valor a enviar",
+    "reference": "Referencia",
+    "sent": "¡Enviado!",
+    "paused": "Pausado",
+    "autoAdvancing": "Avanzando automáticamente",
+    "previousStep": "Paso anterior",
+    "nextStep": "Siguiente paso",
+    "stepN": "Paso {n}"
   },
   "AdminLogin": {
     "area": "Área de Gestión",
@@ -104,7 +118,9 @@
     "empty": "No hay platos en el menú. Agregue uno arriba.",
     "edit": "Editar",
     "remove": "Eliminar",
-    "confirmRemove": "¿Eliminar este plato del menú?"
+    "confirmRemove": "¿Está seguro?",
+    "confirmYes": "Sí, eliminar",
+    "confirmNo": "Cancelar"
   },
   "MenuForm": {
     "editTitle": "Editar Plato",

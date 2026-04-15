@@ -77,11 +77,11 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-stone-200 p-5 shadow-sm space-y-4">
-      <h3 className="font-bold text-[#1a3a3a]">{editing ? t('editTitle') : t('addTitle')}</h3>
+      <h3 className="font-bold text-foreground">{editing ? t('editTitle') : t('addTitle')}</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('name')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('name')}</label>
           <input
             type="text"
             value={name}
@@ -93,7 +93,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('description')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('description')}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -104,7 +104,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('price')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('price')}</label>
           <input
             type="number"
             step="0.01"
@@ -118,7 +118,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">{t('date')}</label>
+          <label className="block text-sm font-medium text-foreground mb-1">{t('date')}</label>
           <input
             type="date"
             value={mealDate}
@@ -128,11 +128,10 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
           />
         </div>
 
-        {/* Image upload */}
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-[#1a3a3a] mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             {t('photo')}
-            <span className="text-[#1a3a3a]/40 font-normal ml-1">{t('photoOptional')}</span>
+            <span className="text-foreground/40 font-normal ml-1">{t('photoOptional')}</span>
           </label>
 
           {imagePreview ? (
@@ -141,6 +140,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
                 src={imagePreview}
                 alt="Preview"
                 fill
+                sizes="(max-width: 768px) 100vw, 600px"
                 className="object-cover"
                 unoptimized={imageFile !== null}
               />
@@ -156,8 +156,8 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
           ) : (
             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-stone-300 rounded-xl cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors">
               <span className="text-2xl mb-1">🖼️</span>
-              <span className="text-sm text-[#1a3a3a]/60">{t('chooseImage')}</span>
-              <span className="text-xs text-[#1a3a3a]/40 mt-0.5">{t('formats')}</span>
+              <span className="text-sm text-foreground/60">{t('chooseImage')}</span>
+              <span className="text-xs text-foreground/40 mt-0.5">{t('formats')}</span>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -185,7 +185,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
         <button
           type="button"
           onClick={onCancel}
-          className="bg-white border border-stone-300 text-[#1a3a3a]/70 hover:bg-stone-50 font-medium px-5 py-2 rounded-xl text-sm transition-colors"
+          className="bg-white border border-stone-300 text-foreground/70 hover:bg-stone-50 font-medium px-5 py-2 rounded-xl text-sm transition-colors"
         >
           {t('cancel')}
         </button>

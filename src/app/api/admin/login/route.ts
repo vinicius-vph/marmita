@@ -7,7 +7,6 @@ import { env } from '@/env';
 const MAX_BODY = 1_000; // 1 KB is plenty for a password payload
 
 export async function POST(req: NextRequest) {
-  // SEC-08: reject requests from unexpected origins
   if (!checkOrigin(req)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -21,7 +20,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // SEC-13: enforce body size limit before parsing
   const text = await req.text();
   if (text.length > MAX_BODY) {
     return NextResponse.json({ error: 'Payload too large' }, { status: 413 });

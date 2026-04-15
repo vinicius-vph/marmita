@@ -5,6 +5,11 @@ test.describe('Homepage', () => {
     await page.goto('/');
   });
 
+  test('serves PT locale at / without redirecting to /en', async ({ page }) => {
+    await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
+    await expect(page).not.toHaveURL(/\/en/);
+  });
+
   test('renders header with logo and title', async ({ page }) => {
     await expect(page.getByRole('img', { name: /Igreja Baptista/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Marmita Solidária' })).toBeVisible();
@@ -36,6 +41,14 @@ test.describe('Homepage', () => {
 
   test('language switcher is present', async ({ page }) => {
     // Use exact:true to avoid substring matches (e.g. menu item buttons containing "EN")
+    await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
+  });
+});
+
+test.describe('/obrigado page', () => {
+  test('header shows language switcher', async ({ page }) => {
+    await page.goto('/obrigado?nome=Test&prato=Teste&quantidade=1&total=5&categoria=meals');
     await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
   });

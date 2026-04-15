@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import ReservationsTable from '@/components/admin/ReservationsTable';
-import type { Reservation, Category } from '@/types';
+import type { ReservationWithMenu, Category } from '@/types';
 
 export const revalidate = 0;
 
@@ -23,7 +23,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
 
   const menuItemIds = (menuItemsData ?? []).map((m) => m.id);
 
-  let data: Reservation[] = [];
+  let data: ReservationWithMenu[] = [];
   let error: { message: string } | null = null;
 
   if (menuItemIds.length > 0) {
@@ -32,7 +32,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
       .select('*, menu_items(name, meal_date, price)')
       .in('menu_item_id', menuItemIds)
       .order('created_at', { ascending: false });
-    data = (result.data ?? []) as Reservation[];
+    data = (result.data ?? []) as ReservationWithMenu[];
     error = result.error;
   }
 
@@ -47,7 +47,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
   return (
     <div>
       <h2 className="text-xl font-bold text-stone-800 mb-6">{t('title')}</h2>
-      <ReservationsTable key={category} reservations={(data ?? []) as Reservation[]} />
+      <ReservationsTable key={category} reservations={(data ?? []) as ReservationWithMenu[]} />
     </div>
   );
 }

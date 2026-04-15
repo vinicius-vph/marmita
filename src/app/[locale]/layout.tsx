@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import HtmlLang from '@/components/HtmlLang';
-// globals.css is imported in the root layout (src/app/layout.tsx)
 
 export const metadata: Metadata = {
   title: 'Marmita Solidária — Obras do Templo',

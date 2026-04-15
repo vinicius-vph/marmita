@@ -28,15 +28,7 @@ export default function LoginPage() {
         return;
       }
 
-      let message = t('errorDefault');
-      try {
-        const data = await res.json();
-        if (data?.error) message = data.error;
-      } catch {
-        // resposta sem JSON válido — mantém mensagem padrão
-      }
-
-      setError(message);
+      setError(t('errorDefault'));
     } catch {
       setError(t('errorConnection'));
     } finally {
@@ -45,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f0f7f7] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="bg-white rounded-2xl shadow-md p-8 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
           <Image
@@ -56,13 +48,13 @@ export default function LoginPage() {
             className="rounded-full border-2 border-teal-200 shadow mb-3"
             priority
           />
-          <h1 className="text-xl font-bold text-[#1a3a3a]">{t('area')}</h1>
-          <p className="text-sm text-[#1a3a3a]/50">{t('app')}</p>
+          <h1 className="text-xl font-bold text-foreground">{t('area')}</h1>
+          <p className="text-sm text-foreground/50">{t('app')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[#1a3a3a] mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
               {t('password')}
             </label>
             <input
@@ -95,7 +87,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <a href="/" className="text-xs text-[#1a3a3a]/40 hover:text-[#1a3a3a] underline">
+          <a href="/" className="text-xs text-foreground/40 hover:text-foreground underline">
             {t('back')}
           </a>
         </div>

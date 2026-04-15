@@ -31,7 +31,6 @@ export default function CategoryTabs({
 
   return (
     <div className="space-y-8">
-      {/* Toggle de categoria */}
       <div className="flex gap-1 p-1 bg-stone-100 rounded-xl">
         <button
           onClick={() => setTab('meals')}
@@ -61,10 +60,10 @@ export default function CategoryTabs({
         <ReservationForm key={tab} menuItems={items} category={tab} />
       ) : (
         <section className="text-center py-12">
-          <p className="text-[#1a3a3a]/60 text-lg">
+          <p className="text-foreground/60 text-lg">
             {tab === 'meals' ? tHome('noMeals') : tHome('noBreakfast')}
           </p>
-          <p className="text-[#1a3a3a]/40 text-sm mt-2">{tHome('comeBackSoon')}</p>
+          <p className="text-foreground/40 text-sm mt-2">{tHome('comeBackSoon')}</p>
         </section>
       )}
     </div>

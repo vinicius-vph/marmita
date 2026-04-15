@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f0f7f7;
-  --foreground: #1a3a3a;
+@theme {
+  --color-foreground: #1a3a3a;
+  --color-background: #f0f7f7;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-background);
+  color: var(--color-foreground);
   font-family: Georgia, 'Times New Roman', serif;
 }
 

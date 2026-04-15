@@ -3,9 +3,9 @@ import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { VALID_CATEGORIES } from '@/lib/constants';
 import type { Category } from '@/types';
 
-const VALID_CATEGORIES: Category[] = ['meals', 'breakfast'];
 const MAX_FINANCIAL_VALUE = 1_000_000;
 const MAX_LABEL_LENGTH = 255;
 const MAX_BODY = 2_000; // 2 KB is more than enough for this payload
@@ -14,12 +14,10 @@ export async function PUT(req: NextRequest) {
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // SEC-08: reject cross-origin requests
   if (!checkOrigin(req)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  // SEC-13: enforce body size limit before parsing
   const text = await req.text();
   if (text.length > MAX_BODY) {
     return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
@@ -73,7 +71,6 @@ export async function PUT(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // SEC-15: audit log
   await logAdminAction('fundraising.update', req, category as string, {
     goal: goalNum,
     ...(label !== undefined && { label }),

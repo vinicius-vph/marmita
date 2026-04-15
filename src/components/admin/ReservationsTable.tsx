@@ -2,15 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { Reservation } from '@/types';
+import { useTranslations, useLocale } from 'next-intl';
+import { ReservationWithMenu } from '@/types';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 
 type Filter = 'all' | 'pending' | 'paid';
 
-export default function ReservationsTable({ reservations: initial }: { reservations: Reservation[] }) {
+export default function ReservationsTable({ reservations: initial }: { reservations: ReservationWithMenu[] }) {
   const router = useRouter();
   const t = useTranslations('ReservationsTable');
+  const locale = useLocale();
   const [reservations, setReservations] = useState(initial);
   const [filter, setFilter] = useState<Filter>('all');
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -63,7 +64,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               filter === f
                 ? 'bg-teal-800 text-white'
-                : 'bg-white border border-stone-300 text-[#1a3a3a]/70 hover:bg-stone-50'
+                : 'bg-white border border-stone-300 text-foreground/70 hover:bg-stone-50'
             }`}
           >
             {filterLabels[f]}{' '}
@@ -77,7 +78,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-center text-[#1a3a3a]/40 py-8">{t('empty')}</p>
+        <p className="text-center text-foreground/40 py-8">{t('empty')}</p>
       ) : (
         <div className="space-y-3">
           {filtered.map((r) => (
@@ -89,18 +90,18 @@ export default function ReservationsTable({ reservations: initial }: { reservati
             >
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
-                  <p className="font-semibold text-[#1a3a3a]">{r.customer_name}</p>
-                  <p className="text-sm text-[#1a3a3a]/60">{r.customer_phone}</p>
+                  <p className="font-semibold text-foreground">{r.customer_name}</p>
+                  <p className="text-sm text-foreground/60">{r.customer_phone}</p>
                   {r.menu_items && (
-                    <p className="text-sm text-[#1a3a3a]/70 mt-1">
+                    <p className="text-sm text-foreground/70 mt-1">
                       {r.quantity}x {r.menu_items.name}{' '}
-                      <span className="text-[#1a3a3a]/40">
-                        — {formatDate(r.menu_items.meal_date)}
+                      <span className="text-foreground/40">
+                        — {formatDate(r.menu_items.meal_date, locale)}
                       </span>
                     </p>
                   )}
-                  <p className="text-xs text-[#1a3a3a]/40 mt-1">
-                    {t('reservedAt', { date: formatDateTime(r.created_at) })}
+                  <p className="text-xs text-foreground/40 mt-1">
+                    {t('reservedAt', { date: formatDateTime(r.created_at, locale) })}
                   </p>
                 </div>
                 <div className="text-right shrink-0">

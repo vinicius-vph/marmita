@@ -1,5 +1,8 @@
 import { format, parseISO } from 'date-fns';
-import { pt } from 'date-fns/locale';
+import { pt, enUS, es } from 'date-fns/locale';
+import type { Locale } from 'date-fns';
+
+const dateFnsLocales: Record<string, Locale> = { pt, en: enUS, es };
 
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat('pt-PT', {
@@ -8,16 +11,17 @@ export function formatCurrency(value: number): string {
   }).format(value);
 }
 
-export function formatDate(dateStr: string): string {
+export function formatDate(dateStr: string, locale = 'pt'): string {
   try {
     const date = parseISO(dateStr);
-    return format(date, "EEEE, d 'de' MMMM", { locale: pt });
+    const l = dateFnsLocales[locale] ?? pt;
+    const pattern = locale === 'en' ? 'EEEE, d MMMM' : "EEEE, d 'de' MMMM";
+    return format(date, pattern, { locale: l }).toLowerCase();
   } catch {
     return dateStr;
   }
 }
 
-// Formata +351968326760 → +351 968 326 760
 export function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   if (digits.length === 12 && digits.startsWith('351')) {
@@ -29,16 +33,19 @@ export function formatPhone(phone: string): string {
   return phone;
 }
 
-// Converte número de telefone para URL do WhatsApp: +351968326760 → https://wa.me/351968326760
 export function whatsappUrl(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   return `https://wa.me/${digits}`;
 }
 
-export function formatDateTime(dateStr: string): string {
+export function formatDateTime(dateStr: string, locale = 'pt'): string {
   try {
     const date = parseISO(dateStr);
-    return format(date, "d MMM yyyy 'às' HH:mm", { locale: pt });
+    const l = dateFnsLocales[locale] ?? pt;
+    const pattern = locale === 'en'
+      ? 'MMMM d, yyyy, HH:mm'
+      : "d 'de' MMMM 'de' yyyy, HH:mm";
+    return format(date, pattern, { locale: l }).toLowerCase();
   } catch {
     return dateStr;
   }

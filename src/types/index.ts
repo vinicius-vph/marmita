@@ -22,7 +22,10 @@ export interface Reservation {
   paid: boolean;
   paid_at: string | null;
   created_at: string;
-  menu_items?: Pick<MenuItem, 'name' | 'meal_date' | 'price'>;
+}
+
+export interface ReservationWithMenu extends Reservation {
+  menu_items: Pick<MenuItem, 'name' | 'meal_date' | 'price'>;
 }
 
 export interface FundraisingSummary {

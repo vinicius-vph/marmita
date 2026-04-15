@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession } from '@/lib/auth';
+import { UUID_REGEX } from '@/lib/constants';
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_QTY = 100;
 const MAX_BODY = 5_000; // 5 KB is ample for a reservation payload
 
@@ -21,7 +21,6 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  // SEC-13: enforce body size limit before parsing
   const text = await req.text();
   if (text.length > MAX_BODY) {
     return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
