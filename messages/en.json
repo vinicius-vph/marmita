@@ -85,6 +85,7 @@
     "checking": "Verifying...",
     "back": "← Back to site",
     "errorDefault": "Incorrect password.",
+    "errorRateLimit": "Too many attempts. Please wait {minutes} minute(s) and try again.",
     "errorConnection": "Connection error. Please check your internet and try again."
   },
   "AdminLayout": {

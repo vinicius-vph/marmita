@@ -28,6 +28,13 @@ export default function LoginPage() {
         return;
       }
 
+      if (res.status === 429) {
+        const retryAfter = res.headers.get('Retry-After');
+        const minutes = retryAfter ? Math.ceil(Number(retryAfter) / 60) : 15;
+        setError(t('errorRateLimit', { minutes }));
+        return;
+      }
+
       setError(t('errorDefault'));
     } catch {
       setError(t('errorConnection'));

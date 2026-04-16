@@ -85,6 +85,7 @@
     "checking": "Verificando...",
     "back": "← Volver al sitio",
     "errorDefault": "Contraseña incorrecta.",
+    "errorRateLimit": "Demasiados intentos. Espere {minutes} minuto(s) e intente de nuevo.",
     "errorConnection": "Error de conexión. Verifique su internet e intente nuevamente."
   },
   "AdminLayout": {

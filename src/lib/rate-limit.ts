@@ -1,4 +1,14 @@
+import type { NextRequest } from 'next/server';
+
 const store = new Map<string, { count: number; resetAt: number }>();
+
+export function getClientIp(req: NextRequest): string {
+  // X-Forwarded-For is client-controllable and cannot be trusted without a
+  // validated proxy in front. Only x-real-ip is safe (set by Nginx / platform).
+  // In development (no proxy) all requests fall back to 'unknown', which still
+  // correctly enforces the per-bucket rate limit across all local attempts.
+  return req.headers.get('x-real-ip')?.trim() ?? 'unknown';
+}
 
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000;

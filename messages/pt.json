@@ -85,6 +85,7 @@
     "checking": "A verificar...",
     "back": "← Voltar ao site",
     "errorDefault": "Senha incorreta.",
+    "errorRateLimit": "Demasiadas tentativas. Aguarde {minutes} minuto(s) e tente novamente.",
     "errorConnection": "Erro de ligação. Verifique a sua internet e tente novamente."
   },
   "AdminLayout": {
