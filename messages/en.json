@@ -73,6 +73,8 @@
     "sent": "Sent!",
     "paused": "Paused",
     "autoAdvancing": "Auto-advancing",
+    "copyNumber": "Copy number",
+    "copied": "Copied!",
     "previousStep": "Previous step",
     "nextStep": "Next step",
     "stepN": "Step {n}"

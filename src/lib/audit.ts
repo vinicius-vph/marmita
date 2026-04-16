@@ -7,10 +7,7 @@ export async function logAdminAction(
   payload?: Record<string, unknown>
 ): Promise<void> {
   try {
-    const ip =
-      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-      req.headers.get('x-real-ip') ??
-      null;
+    const ip = req.headers.get('x-real-ip')?.trim() ?? null;
 
     const supabase = createAdminClient();
     await supabase.from('admin_audit_log').insert({

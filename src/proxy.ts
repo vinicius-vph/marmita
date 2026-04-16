@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from '@/i18n/routing';
-import { env } from '@/env';
+import { verifyAdminToken } from '@/lib/auth';
 
 const intlMiddleware = createIntlMiddleware(routing);
-const getSecret = () => new TextEncoder().encode(env.AUTH_SECRET);
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,26 +18,17 @@ export async function proxy(request: NextRequest) {
     const token = request.cookies.get('admin_session')?.value;
 
     if (stripped === '/admin/login') {
-      if (token) {
-        try {
-          await jwtVerify(token, getSecret());
-          return NextResponse.redirect(new URL(`${base}/admin`, request.url));
-        } catch {
-        }
+      if (token && await verifyAdminToken(token)) {
+        return NextResponse.redirect(new URL(`${base}/admin`, request.url));
       }
       return intlMiddleware(request);
     }
 
-    if (!token) {
+    if (!token || !await verifyAdminToken(token)) {
       return NextResponse.redirect(new URL(`${base}/admin/login`, request.url));
     }
 
-    try {
-      await jwtVerify(token, getSecret());
-      return intlMiddleware(request);
-    } catch {
-      return NextResponse.redirect(new URL(`${base}/admin/login`, request.url));
-    }
+    return intlMiddleware(request);
   }
 
   return intlMiddleware(request);

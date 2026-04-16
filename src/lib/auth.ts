@@ -44,25 +44,22 @@ export async function getAdminSession(): Promise<string | null> {
 }
 
 export async function revokeAdminToken(token: string): Promise<void> {
-  try {
-    const { payload } = await jwtVerify(token, getSecret());
-    if (!payload.jti || !payload.exp) return;
+  const { payload } = await jwtVerify(token, getSecret());
+  if (!payload.jti || !payload.exp) return;
 
-    const supabase = createAdminClient();
-    await supabase.from('revoked_tokens').insert({
-      jti: payload.jti,
-      expires_at: new Date(payload.exp * 1000).toISOString(),
-    });
-  } catch {
-  }
+  const supabase = createAdminClient();
+  const { error } = await supabase.from('revoked_tokens').insert({
+    jti: payload.jti,
+    expires_at: new Date(payload.exp * 1000).toISOString(),
+  });
+  if (error) throw new Error(`Failed to revoke token: ${error.message}`);
 }
 
 export function checkOrigin(req: Request): boolean {
   const origin = req.headers.get('origin');
-  if (!origin) return true;
-
   const host = req.headers.get('host');
-  if (!host) return false;
+
+  if (!origin || !host) return false;
 
   try {
     return new URL(origin).host === host;

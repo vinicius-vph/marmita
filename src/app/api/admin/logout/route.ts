@@ -6,10 +6,15 @@ export async function POST() {
   const token = await getAdminSession();
   if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  await revokeAdminToken(token);
-
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+
+  try {
+    await revokeAdminToken(token);
+  } catch (err) {
+    console.error('Token revocation failed during logout:', err);
+    return NextResponse.json({ error: 'Logout incomplete: token revocation failed' }, { status: 500 });
+  }
 
   return NextResponse.json({ success: true });
 }

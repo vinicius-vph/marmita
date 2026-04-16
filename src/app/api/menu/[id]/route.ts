@@ -64,7 +64,7 @@ export async function PUT(
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 
   await logAdminAction('menu.update', req, id, {
     ...(typeof name === 'string' && { name: name.trim() }),
@@ -107,7 +107,7 @@ export async function DELETE(
     .update({ active: false })
     .eq('id', id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 
   await logAdminAction('menu.delete', req, id);
 

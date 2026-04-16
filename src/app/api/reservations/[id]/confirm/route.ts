@@ -31,7 +31,7 @@ export async function PATCH(
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 
   await logAdminAction('reservation.confirm', req, id, { paid_at: paidAt });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import PhoneMockup from './PhoneMockup';
 
@@ -19,6 +19,8 @@ export default function MbwayPaymentGuide({ phone, rawPhone, amount, reference }
   const [step, setStep] = useState(0);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goTo = useCallback((next: number) => {
     setVisible(false);
@@ -33,6 +35,14 @@ export default function MbwayPaymentGuide({ phone, rawPhone, amount, reference }
     const id = setTimeout(() => goTo((step + 1) % TOTAL), DELAY_MS);
     return () => clearTimeout(id);
   }, [paused, step, goTo]);
+
+  const copyPhone = useCallback(() => {
+    navigator.clipboard.writeText(rawPhone).then(() => {
+      setCopied(true);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+    });
+  }, [rawPhone]);
 
   const fadeClass = visible ? 'opacity-100' : 'opacity-0';
 
@@ -75,6 +85,25 @@ export default function MbwayPaymentGuide({ phone, rawPhone, amount, reference }
           <p className={`text-sm text-teal-900 leading-relaxed transition-opacity duration-200 ${fadeClass}`}>
             {stepText()}
           </p>
+
+          {step === 2 && (
+            <button
+              onClick={copyPhone}
+              className="mt-3 flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900 border border-teal-300 hover:border-teal-500 rounded-lg px-3 py-1.5 transition-colors bg-white"
+            >
+              {copied ? (
+                <>
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="2,9 6,13 14,4"/></svg>
+                  {t('copied')}
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v6.5A1.5 1.5 0 0 0 3 11h2"/></svg>
+                  {t('copyNumber')}
+                </>
+              )}
+            </button>
+          )}
 
           <div className="flex items-center gap-2 mt-5">
             <button

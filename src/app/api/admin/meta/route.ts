@@ -69,7 +69,7 @@ export async function PUT(req: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 
   await logAdminAction('fundraising.update', req, category as string, {
     goal: goalNum,

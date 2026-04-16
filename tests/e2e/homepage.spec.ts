@@ -44,12 +44,11 @@ test.describe('Homepage', () => {
     await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
   });
-});
 
-test.describe('/obrigado page', () => {
-  test('header shows language switcher', async ({ page }) => {
-    await page.goto('/obrigado?nome=Test&prato=Teste&quantidade=1&total=5&categoria=meals');
-    await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
+  test('language switcher switches locale', async ({ page }) => {
+    await page.getByRole('button', { name: 'EN', exact: true }).click();
+    await expect(page).toHaveURL(/\/en\//);
+    await page.getByRole('button', { name: 'PT', exact: true }).click();
+    await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
   });
 });

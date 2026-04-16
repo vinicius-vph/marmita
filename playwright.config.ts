@@ -13,12 +13,25 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'setup',
+      testMatch: '**/auth.setup.ts',
+    },
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'mobile',
       use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'admin-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/admin.json',
+      },
+      dependencies: ['setup'],
+      testMatch: ['**/admin-dashboard.spec.ts', '**/admin-menu.spec.ts', '**/admin-meta.spec.ts'],
     },
   ],
   webServer: {
