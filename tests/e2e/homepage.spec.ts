@@ -47,7 +47,7 @@ test.describe('Homepage', () => {
 
   test('language switcher switches locale', async ({ page }) => {
     await page.getByRole('button', { name: 'EN', exact: true }).click();
-    await expect(page).toHaveURL(/\/en\//);
+    await expect(page).toHaveURL(/\/en/);
     await page.getByRole('button', { name: 'PT', exact: true }).click();
     await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
   });

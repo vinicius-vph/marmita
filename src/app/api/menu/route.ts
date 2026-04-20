@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
   const description = formData.get('description');
   const price = formData.get('price');
   const meal_date = formData.get('meal_date');
+  const reservation_deadline = formData.get('reservation_deadline');
   const imageFile = formData.get('image');
   const rawCategory = formData.get('category');
 
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
       description: typeof description === 'string' && description.trim() ? description.trim() : null,
       price: parseFloat(price),
       meal_date,
+      reservation_deadline: typeof reservation_deadline === 'string' && reservation_deadline ? reservation_deadline : null,
       image_url,
       category,
     })

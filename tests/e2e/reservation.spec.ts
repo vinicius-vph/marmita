@@ -32,7 +32,7 @@ test.describe('Reservation flow', () => {
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('AB');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
-    await expect(page.getByText(/nome completo|full name|nombre/i)).toBeVisible();
+    await expect(page.getByText(/Por favor insira o seu nome|Please enter your full|Por favor ingrese su nombre/i)).toBeVisible();
   });
 
   test('validates phone minimum digits', async ({ page }) => {
@@ -45,7 +45,7 @@ test.describe('Reservation flow', () => {
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('12345');
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
-    await expect(page.getByText(/telefone|phone|teléfono/i)).toBeVisible();
+    await expect(page.getByText(/Por favor insira um número|Please enter a valid phone|Por favor ingrese un número/i)).toBeVisible();
   });
 
   test('quantity stepper increments and decrements', async ({ page }) => {
