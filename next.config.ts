@@ -17,7 +17,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  env: {
+    NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version,
+  },
+  ...(isDev && {
+    allowedDevOrigins: process.env.ALLOWED_DEV_ORIGINS
+      ? process.env.ALLOWED_DEV_ORIGINS.split(',').map(o => o.trim())
+      : ['127.0.0.1', 'localhost'],
+  }),
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [

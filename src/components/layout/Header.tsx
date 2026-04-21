@@ -17,7 +17,7 @@ export default async function Header({ showTagline = false, showLanguageSwitcher
         <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity">
           <div className="shrink-0">
             <Image
-              src="/logo.jpg"
+              src="/logo.jpeg"
               alt="Primeira Igreja Baptista de Vila Real"
               width={showTagline ? 64 : 52}
               height={showTagline ? 64 : 52}
