@@ -37,6 +37,11 @@ export interface FundraisingSummary {
   remaining: number;
 }
 
+export interface MonthlyFundraising {
+  month: string; // 'YYYY-MM'
+  total: number;
+}
+
 export interface ReservationFormData {
   customer_name: string;
   customer_phone: string;

@@ -4,6 +4,8 @@ export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9
 
 export const VALID_CATEGORIES: Category[] = ['meals', 'breakfast'];
 
+export const FUNDRAISING_START_YEAR = 2025;
+
 export const IMAGE_BUCKET = 'menu-images';
 export const IMAGE_MAX_SIZE = 2 * 1024 * 1024;
 

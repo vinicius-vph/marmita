@@ -5,13 +5,15 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import FundraisingTracker from './FundraisingTracker';
 import ReservationForm from './ReservationForm';
-import type { MenuItem, FundraisingSummary } from '@/types';
+import type { MenuItem, FundraisingSummary, MonthlyFundraising } from '@/types';
 
 interface Props {
   meals: MenuItem[];
   breakfast: MenuItem[];
   mealsFundraising: FundraisingSummary;
   breakfastFundraising: FundraisingSummary;
+  mealsHistory: MonthlyFundraising[];
+  breakfastHistory: MonthlyFundraising[];
 }
 
 export default function CategoryTabs({
@@ -19,6 +21,8 @@ export default function CategoryTabs({
   breakfast,
   mealsFundraising,
   breakfastFundraising,
+  mealsHistory,
+  breakfastHistory,
 }: Props) {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('category') === 'breakfast' ? 'breakfast' : 'meals';
@@ -28,6 +32,7 @@ export default function CategoryTabs({
 
   const items = tab === 'meals' ? meals : breakfast;
   const fundraising = tab === 'meals' ? mealsFundraising : breakfastFundraising;
+  const history = tab === 'meals' ? mealsHistory : breakfastHistory;
 
   return (
     <div className="space-y-8">
@@ -54,18 +59,20 @@ export default function CategoryTabs({
         </button>
       </div>
 
-      <FundraisingTracker data={fundraising} />
+      <FundraisingTracker data={fundraising} history={history} />
 
-      {items.length > 0 ? (
-        <ReservationForm key={tab} menuItems={items} category={tab} />
-      ) : (
-        <section className="text-center py-12">
-          <p className="text-foreground/60 text-lg">
-            {tab === 'meals' ? tHome('noMeals') : tHome('noBreakfast')}
-          </p>
-          <p className="text-foreground/40 text-sm mt-2">{tHome('comeBackSoon')}</p>
-        </section>
-      )}
+      <div>
+        {items.length > 0 ? (
+          <ReservationForm key={tab} menuItems={items} category={tab} />
+        ) : (
+          <section className="text-center py-12">
+            <p className="text-foreground/60 text-lg">
+              {tab === 'meals' ? tHome('noMeals') : tHome('noBreakfast')}
+            </p>
+            <p className="text-foreground/40 text-sm mt-2">{tHome('comeBackSoon')}</p>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

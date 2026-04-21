@@ -37,6 +37,19 @@
     "deadlinePassed": "Prazo encerrado",
     "deadline": "Reservas até {date}"
   },
+  "FundraisingChart": {
+    "title": "Histórico de angariação",
+    "subtitle": "Últimos 12 meses",
+    "printButton": "Exportar PDF",
+    "generating": "A gerar...",
+    "generatedOn": "Gerado em:",
+    "reportTitle": "Relatório de Angariação",
+    "reportTotal": "Total arrecadado",
+    "reportMonth": "Mês",
+    "reportAmount": "Valor",
+    "prevPeriod": "Anterior",
+    "nextPeriod": "Seguinte"
+  },
   "FundraisingTracker": {
     "tagline": "Cada refeição comprada aproxima-nos do nosso objetivo!",
     "percentage": "{value}% alcançado",

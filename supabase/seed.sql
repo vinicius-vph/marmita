@@ -2,6 +2,8 @@
 -- Seed — Dados de teste para desenvolvimento local
 -- ================================================================
 
+ALTER USER postgres WITH PASSWORD 'nufy#$23113';
+
 -- Pratos do menu — Refeições (category = 'meals')
 INSERT INTO menu_items (id, name, description, price, meal_date, active, category) VALUES
   ('00000000-0000-0000-0000-000000000001',

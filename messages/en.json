@@ -37,6 +37,19 @@
     "deadlinePassed": "Deadline passed",
     "deadline": "Reserve by {date}"
   },
+  "FundraisingChart": {
+    "title": "Fundraising history",
+    "subtitle": "Last 12 months",
+    "printButton": "Export PDF",
+    "generating": "Generating...",
+    "generatedOn": "Generated on:",
+    "reportTitle": "Fundraising Report",
+    "reportTotal": "Total raised",
+    "reportMonth": "Month",
+    "reportAmount": "Amount",
+    "prevPeriod": "Previous",
+    "nextPeriod": "Next"
+  },
   "FundraisingTracker": {
     "tagline": "Every meal brings us closer to our goal!",
     "percentage": "{value}% reached",
