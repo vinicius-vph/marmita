@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
   const { data: menuItem, error: menuError } = await supabase
     .from('menu_items')
-    .select('id, price, active')
+    .select('id, price, active, reservation_deadline')
     .eq('id', menu_item_id)
     .single();
 
@@ -69,6 +69,12 @@ export async function POST(req: NextRequest) {
   }
   if (!menuItem.active) {
     return NextResponse.json({ error: 'Menu item unavailable' }, { status: 400 });
+  }
+  if (menuItem.reservation_deadline) {
+    const today = new Date().toISOString().split('T')[0];
+    if (today > menuItem.reservation_deadline) {
+      return NextResponse.json({ error: 'Reservation deadline passed' }, { status: 400 });
+    }
   }
 
   const total_amount = menuItem.price * qty;

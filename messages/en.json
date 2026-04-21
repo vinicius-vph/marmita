@@ -29,10 +29,13 @@
     "errorPhone": "Please enter a valid phone number.",
     "errorQuantity": "Quantity must be at least 1.",
     "errorSubmit": "Error submitting reservation.",
-    "errorConnection": "Connection error. Please try again."
+    "errorConnection": "Connection error. Please try again.",
+    "errorDeadlinePassed": "The reservation deadline for this dish has passed."
   },
   "MenuCard": {
-    "selected": "✓ Selected"
+    "selected": "✓ Selected",
+    "deadlinePassed": "Deadline passed",
+    "deadline": "Reserve by {date}"
   },
   "FundraisingTracker": {
     "tagline": "Every meal brings us closer to our goal!",
@@ -134,6 +137,8 @@
     "description": "Description",
     "price": "Price (€) *",
     "date": "Meal date *",
+    "deadline": "Reservation deadline",
+    "deadlineOptional": "(optional)",
     "photo": "Dish photo",
     "photoOptional": "(optional, max 2 MB)",
     "chooseImage": "Click to choose image",

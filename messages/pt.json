@@ -29,10 +29,13 @@
     "errorPhone": "Por favor insira um número de telefone válido.",
     "errorQuantity": "A quantidade deve ser pelo menos 1.",
     "errorSubmit": "Erro ao submeter reserva.",
-    "errorConnection": "Erro de ligação. Por favor tente novamente."
+    "errorConnection": "Erro de ligação. Por favor tente novamente.",
+    "errorDeadlinePassed": "O prazo de reserva para este prato já terminou."
   },
   "MenuCard": {
-    "selected": "✓ Selecionado"
+    "selected": "✓ Selecionado",
+    "deadlinePassed": "Prazo encerrado",
+    "deadline": "Reservas até {date}"
   },
   "FundraisingTracker": {
     "tagline": "Cada refeição comprada aproxima-nos do nosso objetivo!",
@@ -134,6 +137,8 @@
     "description": "Descrição",
     "price": "Preço (€) *",
     "date": "Data da refeição *",
+    "deadline": "Prazo limite para reservas",
+    "deadlineOptional": "(opcional)",
     "photo": "Fotografia do prato",
     "photoOptional": "(opcional, máx. 2 MB)",
     "chooseImage": "Clique para escolher imagem",

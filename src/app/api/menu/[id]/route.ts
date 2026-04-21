@@ -27,6 +27,7 @@ export async function PUT(
   const description = formData.get('description');
   const price = formData.get('price');
   const meal_date = formData.get('meal_date');
+  const reservation_deadline = formData.get('reservation_deadline');
   const imageFile = formData.get('image');
   const existingImageUrl = formData.get('existing_image_url');
   const rawCategory = formData.get('category');
@@ -57,6 +58,7 @@ export async function PUT(
       description: typeof description === 'string' && description.trim() ? description.trim() : null,
       price: typeof price === 'string' ? parseFloat(price) : undefined,
       meal_date: typeof meal_date === 'string' ? meal_date : undefined,
+      reservation_deadline: typeof reservation_deadline === 'string' ? (reservation_deadline || null) : undefined,
       image_url,
       category,
     })

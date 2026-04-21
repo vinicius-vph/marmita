@@ -8,6 +8,7 @@ export interface MenuItem {
   meal_date: string;
   active: boolean;
   image_url: string | null;
+  reservation_deadline: string | null;
   created_at: string;
   category: Category;
 }

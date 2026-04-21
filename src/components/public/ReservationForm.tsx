@@ -7,10 +7,16 @@ import { MenuItem, Category } from '@/types';
 import MenuCard from './MenuCard';
 import { formatCurrency } from '@/lib/utils';
 
+function isDeadlinePassed(item: MenuItem): boolean {
+  if (!item.reservation_deadline) return false;
+  const today = new Date().toISOString().split('T')[0];
+  return today > item.reservation_deadline;
+}
+
 export default function ReservationForm({ menuItems, category }: { menuItems: MenuItem[]; category: Category }) {
   const router = useRouter();
   const t = useTranslations('ReservationForm');
-  const [selectedId, setSelectedId] = useState<string>(menuItems[0]?.id ?? '');
+  const [selectedId, setSelectedId] = useState<string>(menuItems.find(m => !isDeadlinePassed(m))?.id ?? '');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -25,6 +31,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
     setError('');
 
     if (!selectedId) { setError(t('errorNoDish')); return; }
+    if (selectedItem && isDeadlinePassed(selectedItem)) { setError(t('errorDeadlinePassed')); return; }
     if (name.trim().length < 3) { setError(t('errorName')); return; }
     const phoneDigits = phone.replace(/\D/g, '');
     if (phoneDigits.length < 9) { setError(t('errorPhone')); return; }
@@ -84,6 +91,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
                   selected={selectedId === item.id}
                   onSelect={setSelectedId}
                   priority={index === 0}
+                  disabled={isDeadlinePassed(item)}
                 />
               </div>
             );

@@ -18,6 +18,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
   const [description, setDescription] = useState(editing?.description ?? '');
   const [price, setPrice] = useState(editing?.price?.toString() ?? '');
   const [mealDate, setMealDate] = useState(editing?.meal_date ?? '');
+  const [deadline, setDeadline] = useState(editing?.reservation_deadline ?? '');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(editing?.image_url ?? null);
   const [loading, setLoading] = useState(false);
@@ -53,6 +54,7 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
     formData.append('description', description);
     formData.append('price', price);
     formData.append('meal_date', mealDate);
+    formData.append('reservation_deadline', deadline);
     formData.append('category', category);
     if (imageFile) {
       formData.append('image', imageFile);
@@ -124,6 +126,20 @@ export default function MenuForm({ editing, category, onSaved, onCancel }: Props
             value={mealDate}
             onChange={(e) => setMealDate(e.target.value)}
             required
+            className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            {t('deadline')}
+            <span className="text-foreground/40 font-normal ml-1">{t('deadlineOptional')}</span>
+          </label>
+          <input
+            type="date"
+            value={deadline}
+            max={mealDate || undefined}
+            onChange={(e) => setDeadline(e.target.value)}
             className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
         </div>
