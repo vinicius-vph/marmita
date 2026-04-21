@@ -13,7 +13,7 @@ test.describe('Admin area', () => {
     await page.locator('#password').fill('wrong-password-xyz');
     await page.getByRole('button', { name: /Entrar|Sign in/i }).click();
     // PT locale must show the translated message, never the raw API "Invalid credentials"
-    await expect(page.getByText(/Senha incorreta|Too many requests|Erro de ligação/i)).toBeVisible();
+    await expect(page.getByText(/Senha incorreta|Demasiadas tentativas|Too many attempts|Erro de ligação/i)).toBeVisible();
     await expect(page.getByText('Invalid credentials')).not.toBeVisible();
   });
 

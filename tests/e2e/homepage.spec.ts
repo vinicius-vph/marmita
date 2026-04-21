@@ -40,15 +40,21 @@ test.describe('Homepage', () => {
   });
 
   test('language switcher is present', async ({ page }) => {
-    // Use exact:true to avoid substring matches (e.g. menu item buttons containing "EN")
+    // The switcher is a dropdown: the current locale (PT) is always visible as the trigger
     await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
+    // Open the dropdown to check that EN is listed as an option
+    await page.getByRole('button', { name: 'PT', exact: true }).click();
+    await expect(page.getByRole('option', { name: 'EN' })).toBeVisible();
   });
 
   test('language switcher switches locale', async ({ page }) => {
-    await page.getByRole('button', { name: 'EN', exact: true }).click();
-    await expect(page).toHaveURL(/\/en/);
+    // Open dropdown then pick EN
     await page.getByRole('button', { name: 'PT', exact: true }).click();
+    await page.getByRole('option', { name: 'EN' }).click();
+    await expect(page).toHaveURL(/\/en/);
+    // Open dropdown again then pick PT
+    await page.getByRole('button', { name: 'EN', exact: true }).click();
+    await page.getByRole('option', { name: 'PT' }).click();
     await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
   });
 });

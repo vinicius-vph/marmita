@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(`reservation:${ip}`, 20);
+  const rateLimit = await checkRateLimit(`reservation:${ip}`, 20);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: 'Too many requests' },

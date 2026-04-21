@@ -1,6 +1,5 @@
 import type { NextRequest } from 'next/server';
-
-const store = new Map<string, { count: number; resetAt: number }>();
+import { createAdminClient } from '@/lib/supabase/server';
 
 export function getClientIp(req: NextRequest): string {
   // X-Forwarded-For is client-controllable and cannot be trusted without a
@@ -13,27 +12,57 @@ export function getClientIp(req: NextRequest): string {
 const DEFAULT_MAX_ATTEMPTS = 5;
 const DEFAULT_WINDOW_MS = 15 * 60 * 1000;
 
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   maxAttempts = DEFAULT_MAX_ATTEMPTS,
   windowMs = DEFAULT_WINDOW_MS,
-): { allowed: boolean; retryAfter?: number } {
-  const now = Date.now();
-  const record = store.get(key);
+): Promise<{ allowed: boolean; retryAfter?: number }> {
+  if (process.env.RATE_LIMIT_DISABLED === 'true') return { allowed: true };
 
-  if (!record || now > record.resetAt) {
-    store.set(key, { count: 1, resetAt: now + windowMs });
+  const supabase = createAdminClient();
+  const windowStart = new Date(Date.now() - windowMs).toISOString();
+
+  const { count, error: countError } = await supabase
+    .from('login_attempts')
+    .select('*', { count: 'exact', head: true })
+    .eq('key', key)
+    .gt('attempted_at', windowStart);
+
+  if (countError) {
+    // Fail open to avoid locking out users on DB errors
     return { allowed: true };
   }
 
-  if (record.count >= maxAttempts) {
-    return { allowed: false, retryAfter: Math.ceil((record.resetAt - now) / 1000) };
+  if ((count ?? 0) >= maxAttempts) {
+    const { data: oldest } = await supabase
+      .from('login_attempts')
+      .select('attempted_at')
+      .eq('key', key)
+      .gt('attempted_at', windowStart)
+      .order('attempted_at', { ascending: true })
+      .limit(1)
+      .single();
+
+    const retryAfter = oldest
+      ? Math.ceil((new Date(oldest.attempted_at).getTime() + windowMs - Date.now()) / 1000)
+      : windowMs / 1000;
+
+    return { allowed: false, retryAfter };
   }
 
-  record.count++;
+  await supabase.from('login_attempts').insert({ key });
+
+  // Fire-and-forget cleanup of expired rows
+  supabase
+    .from('login_attempts')
+    .delete()
+    .lt('attempted_at', windowStart)
+    .then(() => {});
+
   return { allowed: true };
 }
 
-export function resetRateLimit(key: string): void {
-  store.delete(key);
+export async function resetRateLimit(key: string): Promise<void> {
+  const supabase = createAdminClient();
+  await supabase.from('login_attempts').delete().eq('key', key);
 }

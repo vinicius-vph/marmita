@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(`login:${ip}`);
+  const rateLimit = await checkRateLimit(`login:${ip}`);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: 'Too many requests' },
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 
-  resetRateLimit(`login:${ip}`);
+  await resetRateLimit(`login:${ip}`);
   const token = await signAdminToken();
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
