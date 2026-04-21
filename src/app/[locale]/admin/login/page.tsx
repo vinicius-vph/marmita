@@ -48,7 +48,7 @@ export default function LoginPage() {
       <div className="bg-white rounded-2xl shadow-md p-8 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
           <Image
-            src="/logo.jpg"
+            src="/logo.jpeg"
             alt="Primeira Igreja Baptista de Vila Real"
             width={72}
             height={72}
