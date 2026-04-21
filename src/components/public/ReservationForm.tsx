@@ -53,14 +53,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? t('errorSubmit')); setLoading(false); return; }
 
-      const params = new URLSearchParams({
-        nome: name.trim(),
-        prato: selectedItem?.name ?? '',
-        quantidade: String(quantity),
-        total: String(data.total_amount),
-        categoria: category,
-      });
-      router.push(`/obrigado?${params.toString()}`);
+      router.push(`/obrigado?id=${data.id}`);
     } catch {
       setError(t('errorConnection'));
       setLoading(false);

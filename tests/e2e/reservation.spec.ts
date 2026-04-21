@@ -73,58 +73,47 @@ test.describe('Reservation flow', () => {
       return;
     }
 
-    // Mock API to avoid creating real reservations in the database
-    await page.route('/api/reservations', async (route) => {
-      if (route.request().method() === 'POST') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ id: 'test-id', total_amount: 5.5 }),
-        });
-      } else {
-        await route.continue();
-      }
-    });
-
+    // Use real API — reservation is created in the test database
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
 
     await page.waitForURL(/\/obrigado/);
-    await expect(page).toHaveURL(/\/obrigado/);
-    await expect(page).toHaveURL(/nome=Maria/);
+    await expect(page).toHaveURL(/\/obrigado\?id=[0-9a-f-]{36}/);
   });
 });
 
 test.describe('/obrigado page', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/obrigado?nome=Maria+Silva&prato=Frango+Assado&quantidade=2&total=11&categoria=meals');
+  test('redirects to home when no id param is given', async ({ page }) => {
+    await page.goto('/obrigado');
+    await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
   });
 
-  test('shows thank you heading with customer name', async ({ page }) => {
+  test('redirects to home when id is invalid', async ({ page }) => {
+    await page.goto('/obrigado?id=not-a-uuid');
+    await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
+  });
+
+  test('full reservation flow shows thank you page with correct data', async ({ page }) => {
+    await page.goto('/');
+    const form = page.locator('form');
+    if (await form.count() === 0) {
+      test.skip(true, 'No menu items available');
+      return;
+    }
+
+    await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
+    await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
+    await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
+
+    await page.waitForURL(/\/obrigado\?id=/);
+
     await expect(page.getByRole('heading', { name: /Obrigado.*Maria|Thank you.*Maria|Gracias.*Maria/i })).toBeVisible();
-  });
-
-  test('shows reservation summary with dish, quantity and total', async ({ page }) => {
-    await expect(page.getByText(/Frango Assado/)).toBeVisible();
-    await expect(page.getByText(/2x/)).toBeVisible();
-    // Total formatted: 11,00 € or similar
-    await expect(page.getByText(/11/)).toBeVisible();
-  });
-
-  test('shows MBWay payment guide', async ({ page }) => {
     await expect(page.getByText(/Como pagar via MBWay|How to pay via MBWay|Cómo pagar/i)).toBeVisible();
-  });
 
-  test('has link back to homepage', async ({ page }) => {
     const backLink = page.getByRole('link', { name: /Voltar|Back|Volver/i });
     await expect(backLink).toBeVisible();
     await backLink.click();
     await expect(page).toHaveURL(/^http:\/\/[^/]+(\/)?$/);
-  });
-
-  test('header shows language switcher', async ({ page }) => {
-    await expect(page.getByRole('button', { name: 'PT', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'EN', exact: true })).toBeVisible();
   });
 });

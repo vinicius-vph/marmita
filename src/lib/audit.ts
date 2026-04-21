@@ -16,6 +16,7 @@ export async function logAdminAction(
       payload: payload ?? null,
       ip_address: ip,
     });
-  } catch {
+  } catch (e) {
+    console.error('Audit log failed:', e);
   }
 }

@@ -51,12 +51,20 @@ export async function PUT(
     image_url = result.url;
   }
 
+  let parsedPrice: number | undefined;
+  if (typeof price === 'string') {
+    parsedPrice = parseFloat(price);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      return NextResponse.json({ error: 'Invalid price' }, { status: 400 });
+    }
+  }
+
   const { data, error } = await supabase
     .from('menu_items')
     .update({
       name: typeof name === 'string' ? name.trim() : undefined,
       description: typeof description === 'string' && description.trim() ? description.trim() : null,
-      price: typeof price === 'string' ? parseFloat(price) : undefined,
+      price: parsedPrice,
       meal_date: typeof meal_date === 'string' ? meal_date : undefined,
       reservation_deadline: typeof reservation_deadline === 'string' ? (reservation_deadline || null) : undefined,
       image_url,

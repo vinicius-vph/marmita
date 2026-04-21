@@ -10,19 +10,23 @@ export function getClientIp(req: NextRequest): string {
   return req.headers.get('x-real-ip')?.trim() ?? 'unknown';
 }
 
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000;
+const DEFAULT_MAX_ATTEMPTS = 5;
+const DEFAULT_WINDOW_MS = 15 * 60 * 1000;
 
-export function checkRateLimit(key: string): { allowed: boolean; retryAfter?: number } {
+export function checkRateLimit(
+  key: string,
+  maxAttempts = DEFAULT_MAX_ATTEMPTS,
+  windowMs = DEFAULT_WINDOW_MS,
+): { allowed: boolean; retryAfter?: number } {
   const now = Date.now();
   const record = store.get(key);
 
   if (!record || now > record.resetAt) {
-    store.set(key, { count: 1, resetAt: now + WINDOW_MS });
+    store.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true };
   }
 
-  if (record.count >= MAX_ATTEMPTS) {
+  if (record.count >= maxAttempts) {
     return { allowed: false, retryAfter: Math.ceil((record.resetAt - now) / 1000) };
   }
 

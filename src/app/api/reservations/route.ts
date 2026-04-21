@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
-import { getAdminSession } from '@/lib/auth';
+import { getAdminSession, checkOrigin } from '@/lib/auth';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UUID_REGEX } from '@/lib/constants';
 
 const MAX_QTY = 100;
@@ -21,6 +22,19 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!checkOrigin(req)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  const ip = getClientIp(req);
+  const rateLimit = checkRateLimit(`reservation:${ip}`, 20);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+    );
+  }
+
   const text = await req.text();
   if (text.length > MAX_BODY) {
     return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
