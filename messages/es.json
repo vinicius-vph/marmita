@@ -37,6 +37,19 @@
     "deadlinePassed": "Plazo cerrado",
     "deadline": "Reservas hasta {date}"
   },
+  "FundraisingChart": {
+    "title": "Historial de recaudación",
+    "subtitle": "Últimos 12 meses",
+    "printButton": "Exportar PDF",
+    "generating": "Generando...",
+    "generatedOn": "Generado el:",
+    "reportTitle": "Informe de Recaudación",
+    "reportTotal": "Total recaudado",
+    "reportMonth": "Mes",
+    "reportAmount": "Importe",
+    "prevPeriod": "Anterior",
+    "nextPeriod": "Siguiente"
+  },
   "FundraisingTracker": {
     "tagline": "¡Cada comida nos acerca a nuestro objetivo!",
     "percentage": "{value}% alcanzado",

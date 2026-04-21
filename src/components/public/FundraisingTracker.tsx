@@ -1,8 +1,14 @@
 import { useTranslations } from 'next-intl';
-import { FundraisingSummary } from '@/types';
+import { FundraisingSummary, MonthlyFundraising } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import FundraisingChart from './FundraisingChart';
 
-export default function FundraisingTracker({ data }: { data: FundraisingSummary }) {
+interface Props {
+  data: FundraisingSummary;
+  history: MonthlyFundraising[];
+}
+
+export default function FundraisingTracker({ data, history }: Props) {
   const { goal, label, raised, remaining } = data;
   const percentage = Math.min(Math.round((raised / goal) * 100), 100);
   const goalReached = raised >= goal;
@@ -45,6 +51,8 @@ export default function FundraisingTracker({ data }: { data: FundraisingSummary 
       {goalReached && (
         <p className="mt-4 text-center text-green-700 font-semibold">{t('goalReached')}</p>
       )}
+
+      <FundraisingChart data={history} label={label} total={raised} goal={goal} category={data.category} />
     </section>
   );
 }
