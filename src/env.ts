@@ -7,9 +7,10 @@ function requireEnv(name: string): string {
 const authSecret = requireEnv('AUTH_SECRET');
 if (authSecret.length < 32) throw new Error('AUTH_SECRET must be at least 32 characters');
 
-const adminPasswordHash = requireEnv('ADMIN_PASSWORD_HASH');
+const adminPasswordHashB64 = requireEnv('ADMIN_PASSWORD_HASH');
+const adminPasswordHash = Buffer.from(adminPasswordHashB64, 'base64').toString('utf8');
 if (!adminPasswordHash.startsWith('$2')) {
-  throw new Error('ADMIN_PASSWORD_HASH must be a valid bcrypt hash (start with $2a$ or $2b$)');
+  throw new Error('ADMIN_PASSWORD_HASH must be a valid bcrypt hash encoded in base64');
 }
 
 export const env = {
