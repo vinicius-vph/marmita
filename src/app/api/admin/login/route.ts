@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { timingSafeEqual } from 'crypto';
+import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { signAdminToken, COOKIE_NAME, checkOrigin } from '@/lib/auth';
 import { checkRateLimit, resetRateLimit, getClientIp } from '@/lib/rate-limit';
@@ -33,13 +33,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const expectedBuf = Buffer.from(env.ADMIN_PASSWORD);
-  const providedBuf = Buffer.from(typeof password === 'string' ? password : '');
   const passwordMatch =
-    providedBuf.length === expectedBuf.length &&
-    timingSafeEqual(expectedBuf, providedBuf);
+    typeof password === 'string' &&
+    password.length > 0 &&
+    await bcrypt.compare(password, env.ADMIN_PASSWORD_HASH);
 
-  if (!password || !passwordMatch) {
+  if (!passwordMatch) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 

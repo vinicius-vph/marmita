@@ -1,29 +1,42 @@
+export const revalidate = 0;
+
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { formatCurrency } from '@/lib/utils';
-import { env } from '@/env';
 import { formatPhone } from '@/lib/utils';
+import { createAdminClient } from '@/lib/supabase/server';
+import { UUID_REGEX } from '@/lib/constants';
 import MbwayPaymentGuide from '@/components/public/MbwayPaymentGuide';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { env } from '@/env';
 
 interface Props {
-  searchParams: Promise<{
-    nome?: string;
-    prato?: string;
-    quantidade?: string;
-    total?: string;
-    categoria?: string;
-  }>;
+  searchParams: Promise<{ id?: string }>;
 }
 
 export default async function ObrigadoPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const nome = params.nome ?? 'Cliente';
-  const prato = params.prato ?? 'Refeição';
-  const quantidade = parseInt(params.quantidade ?? '1', 10);
-  const total = parseFloat(params.total ?? '0');
-  const isBreakfast = params.categoria === 'breakfast';
+  const { id } = await searchParams;
+
+  if (!id || !UUID_REGEX.test(id)) redirect('/');
+
+  const supabase = createAdminClient();
+  const { data: reservation } = await supabase
+    .from('reservations')
+    .select('customer_name, quantity, total_amount, menu_items(name, category)')
+    .eq('id', id)
+    .single();
+
+  if (!reservation) redirect('/');
+
+  const menuItem = reservation.menu_items as unknown as { name: string; category: string } | null;
+  const nome = reservation.customer_name;
+  const prato = menuItem?.name ?? '';
+  const quantidade = reservation.quantity;
+  const total = reservation.total_amount;
+  const isBreakfast = menuItem?.category === 'breakfast';
+
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const t = await getTranslations('ThankYou');
   const reference = isBreakfast
