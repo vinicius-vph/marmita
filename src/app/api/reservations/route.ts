@@ -61,7 +61,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid customer name' }, { status: 400 });
   }
 
-  if (typeof customer_phone !== 'string' || customer_phone.trim().length === 0 || customer_phone.length > 50) {
+  const PHONE_REGEX = /^\+?[\d\s\-().]{7,20}$/;
+  if (typeof customer_phone !== 'string' || !PHONE_REGEX.test(customer_phone.trim())) {
     return NextResponse.json({ error: 'Invalid customer phone' }, { status: 400 });
   }
 
@@ -85,7 +86,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Menu item unavailable' }, { status: 400 });
   }
   if (menuItem.reservation_deadline) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Intl.DateTimeFormat('pt-PT', { timeZone: 'Europe/Lisbon' })
+      .format(new Date())
+      .split('/')
+      .reverse()
+      .join('-');
     if (today > menuItem.reservation_deadline) {
       return NextResponse.json({ error: 'Reservation deadline passed' }, { status: 400 });
     }
