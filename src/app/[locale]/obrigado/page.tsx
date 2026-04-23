@@ -8,6 +8,7 @@ import { formatPhone } from '@/lib/utils';
 import { createAdminClient } from '@/lib/supabase/server';
 import { UUID_REGEX } from '@/lib/constants';
 import MbwayPaymentGuide from '@/components/public/MbwayPaymentGuide';
+import IbanCopyBlock from '@/components/public/IbanCopyBlock';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { env } from '@/env';
@@ -24,7 +25,7 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const supabase = createAdminClient();
   const { data: reservation } = await supabase
     .from('reservations')
-    .select('customer_name, quantity, total_amount, menu_items(name, category)')
+    .select('customer_name, quantity, total_amount, payment_method, menu_items(name, category)')
     .eq('id', id)
     .single();
 
@@ -35,6 +36,7 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const prato = menuItem?.name ?? '';
   const quantidade = reservation.quantity;
   const total = reservation.total_amount;
+  const paymentMethod = reservation.payment_method as string;
   const isBreakfast = menuItem?.category === 'breakfast';
 
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
@@ -74,12 +76,31 @@ export default async function ObrigadoPage({ searchParams }: Props) {
             </div>
           </div>
 
-          <MbwayPaymentGuide
-            phone={mbwayPhone}
-            rawPhone={env.MBWAY_PHONE}
-            amount={formatCurrency(total)}
-            reference={reference}
-          />
+          {paymentMethod === 'mbway' && (
+            <MbwayPaymentGuide
+              phone={mbwayPhone}
+              rawPhone={env.MBWAY_PHONE}
+              amount={formatCurrency(total)}
+              reference={reference}
+            />
+          )}
+
+          {paymentMethod === 'cash' && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <p className="font-semibold text-amber-800 mb-1">{t('paymentTitleCash')}</p>
+              <p className="text-sm text-amber-700">{t('paymentCashNote')}</p>
+            </div>
+          )}
+
+          {paymentMethod === 'transfer' && (
+            <IbanCopyBlock
+              iban={env.BANK_IBAN}
+              amount={formatCurrency(total)}
+              title={t('paymentTitleTransfer')}
+              note={t('paymentTransferNote')}
+              totalLabel={t('total')}
+            />
+          )}
 
           <p className="text-center text-sm text-teal-900/50">{t('disclaimer')}</p>
 

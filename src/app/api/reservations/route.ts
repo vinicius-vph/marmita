@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UUID_REGEX } from '@/lib/constants';
+import type { PaymentMethod } from '@/types';
+
+const VALID_PAYMENT_METHODS: PaymentMethod[] = ['mbway', 'cash', 'transfer'];
 
 const MAX_QTY = 100;
 const MAX_BODY = 5_000; // 5 KB is ample for a reservation payload
@@ -14,7 +17,7 @@ export async function GET() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('reservations')
-    .select('*, menu_items(name, meal_date, price)')
+    .select('*, menu_items(name, meal_date, price, category)')
     .order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -47,10 +50,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { menu_item_id, customer_name, customer_phone, quantity } = body;
+  const { menu_item_id, customer_name, customer_phone, quantity, payment_method } = body;
 
-  if (!menu_item_id || !customer_name || !customer_phone || !quantity) {
+  if (!menu_item_id || !customer_name || !customer_phone || !quantity || !payment_method) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  }
+
+  if (!VALID_PAYMENT_METHODS.includes(payment_method as PaymentMethod)) {
+    return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 });
   }
 
   if (typeof menu_item_id !== 'string' || !UUID_REGEX.test(menu_item_id)) {
@@ -101,6 +108,7 @@ export async function POST(req: NextRequest) {
       customer_phone: customer_phone.trim(),
       quantity: qty,
       total_amount,
+      payment_method: payment_method as PaymentMethod,
     })
     .select()
     .single();

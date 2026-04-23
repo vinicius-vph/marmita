@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { MenuItem, Category } from '@/types';
+import { MenuItem, Category, PaymentMethod } from '@/types';
 import MenuCard from './MenuCard';
 import { formatCurrency } from '@/lib/utils';
 
@@ -20,6 +20,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | ''>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -36,6 +37,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
     const phoneDigits = phone.replace(/\D/g, '');
     if (phoneDigits.length < 9) { setError(t('errorPhone')); return; }
     if (quantity < 1) { setError(t('errorQuantity')); return; }
+    if (!paymentMethod) { setError(t('errorPaymentMethod')); return; }
 
     setLoading(true);
     try {
@@ -47,6 +49,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
           customer_name: name.trim(),
           customer_phone: phone.trim(),
           quantity,
+          payment_method: paymentMethod,
         }),
       });
 
@@ -143,6 +146,28 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
             >
               +
             </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            {t('paymentMethod')}
+          </label>
+          <div className="grid grid-cols-3 gap-1 p-1 bg-stone-100 rounded-xl">
+            {(['mbway', 'cash', 'transfer'] as PaymentMethod[]).map((method) => (
+              <button
+                key={method}
+                type="button"
+                onClick={() => { setPaymentMethod(method); setError(''); }}
+                className={`py-2 px-2 rounded-lg text-xs font-medium text-center transition-all ${
+                  paymentMethod === method
+                    ? 'bg-white text-teal-800 shadow-sm font-bold'
+                    : 'text-stone-500 hover:text-stone-700'
+                }`}
+              >
+                {t(`payment${method.charAt(0).toUpperCase() + method.slice(1)}` as 'paymentMbway' | 'paymentCash' | 'paymentTransfer')}
+              </button>
+            ))}
           </div>
         </div>
 
