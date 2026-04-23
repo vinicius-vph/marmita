@@ -148,7 +148,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
           <select value={filterMealDate} onChange={(e) => setFilterMealDate(e.target.value)} className={selectClass}>
             <option value="">{t('allDates')}</option>
             {uniqueDates.map((d) => (
-              <option key={d} value={d}>{formatDate(d, locale)}</option>
+              <option key={d} value={d}>{formatDate(d, locale)} {d.slice(0, 4)}</option>
             ))}
           </select>
         </div>
@@ -165,73 +165,69 @@ export default function ReservationsTable({ reservations: initial }: { reservati
                 r.cancelled ? 'border-stone-200 opacity-60' : r.paid ? 'border-green-200' : 'border-stone-200'
               }`}
             >
-              <div className="flex items-start justify-between gap-3 flex-wrap">
-                <div className="min-w-0">
-                  <p className="font-semibold text-foreground">{r.customer_name}</p>
-                  <p className="text-sm text-foreground/60">{r.customer_phone}</p>
-                  {r.menu_items && (
-                    <p className="text-sm text-foreground/70 mt-1">
-                      {r.quantity}x {r.menu_items.name}{' '}
-                      <span className="text-foreground/40">
-                        — {formatDate(r.menu_items.meal_date, locale)}
-                      </span>
-                    </p>
-                  )}
-                  <p className="text-xs text-foreground/40 mt-1">
-                    {t('reservedAt', { date: formatDateTime(r.created_at, locale) })}
-                    {' · '}
-                    <span className="text-foreground/50">{paymentLabel[r.payment_method] ?? r.payment_method}</span>
-                  </p>
-                </div>
-                <div className="text-right shrink-0 space-y-1">
-                  <p className="font-bold text-teal-700">{formatCurrency(r.total_amount)}</p>
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <p className="font-semibold text-foreground min-w-0">{r.customer_name}</p>
+                <p className="font-bold text-teal-700 shrink-0">{formatCurrency(r.total_amount)}</p>
+              </div>
 
-                  {r.cancelled ? (
-                    <span className="inline-block text-xs bg-stone-100 text-stone-500 font-medium px-2 py-0.5 rounded-full">
-                      {t('cancelledBadge')}
-                    </span>
-                  ) : r.paid ? (
-                    <span className="inline-block text-xs bg-green-100 text-green-700 font-medium px-2 py-0.5 rounded-full">
-                      {t('paid')}
-                    </span>
-                  ) : (
+              <p className="text-sm text-foreground/60">{r.customer_phone}</p>
+
+              {r.menu_items && (
+                <p className="text-sm text-foreground/70 mt-1">
+                  {r.quantity}x {r.menu_items.name}{' '}
+                  <span className="text-foreground/40">— {formatDate(r.menu_items.meal_date, locale)}</span>
+                </p>
+              )}
+
+              <p className="text-xs text-foreground/40 mt-1">
+                {t('reservedAt', { date: formatDateTime(r.created_at, locale) })}
+                {' · '}
+                <span className="text-foreground/50">{paymentLabel[r.payment_method] ?? r.payment_method}</span>
+              </p>
+
+              <div className="mt-3">
+                {r.cancelled ? (
+                  <span className="text-xs bg-stone-100 text-stone-500 font-medium px-2 py-0.5 rounded-full">
+                    {t('cancelledBadge')}
+                  </span>
+                ) : r.paid ? (
+                  <span className="text-xs bg-green-100 text-green-700 font-medium px-2 py-0.5 rounded-full">
+                    {t('paid')}
+                  </span>
+                ) : cancelConfirm === r.id ? (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs text-foreground/60">{t('cancelConfirmText')}</span>
+                    <button
+                      onClick={() => cancelReservation(r.id)}
+                      disabled={cancelling === r.id}
+                      className="text-xs bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-medium px-2 py-0.5 rounded-full transition-colors"
+                    >
+                      {cancelling === r.id ? t('cancelling') : t('cancelYes')}
+                    </button>
+                    <button
+                      onClick={() => setCancelConfirm(null)}
+                      className="text-xs bg-white border border-stone-300 text-foreground/70 hover:bg-stone-50 font-medium px-2 py-0.5 rounded-full transition-colors"
+                    >
+                      {t('cancelNo')}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => confirmPayment(r.id)}
                       disabled={confirming === r.id}
-                      className="text-xs bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-medium px-3 py-1 rounded-full transition-colors"
+                      className="text-xs bg-teal-700 hover:bg-teal-800 disabled:bg-teal-300 text-white font-medium px-3 py-1.5 rounded-lg transition-colors"
                     >
                       {confirming === r.id ? t('confirming') : t('confirmPayment')}
                     </button>
-                  )}
-
-                  {!r.cancelled && (
-                    cancelConfirm === r.id ? (
-                      <div className="flex items-center gap-1 justify-end mt-1">
-                        <span className="text-xs text-foreground/60">{t('cancelConfirmText')}</span>
-                        <button
-                          onClick={() => cancelReservation(r.id)}
-                          disabled={cancelling === r.id}
-                          className="text-xs bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-medium px-2 py-0.5 rounded-full transition-colors"
-                        >
-                          {cancelling === r.id ? t('cancelling') : t('cancelYes')}
-                        </button>
-                        <button
-                          onClick={() => setCancelConfirm(null)}
-                          className="text-xs bg-white border border-stone-300 text-foreground/70 hover:bg-stone-50 font-medium px-2 py-0.5 rounded-full transition-colors"
-                        >
-                          {t('cancelNo')}
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setCancelConfirm(r.id)}
-                        className="block text-xs text-red-500 hover:text-red-700 font-medium mt-1 ml-auto transition-colors"
-                      >
-                        {t('cancelBtn')}
-                      </button>
-                    )
-                  )}
-                </div>
+                    <button
+                      onClick={() => setCancelConfirm(r.id)}
+                      className="text-xs bg-red-600 hover:bg-red-700 text-white font-medium px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      {t('cancelBtn')}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

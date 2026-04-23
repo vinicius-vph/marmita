@@ -153,28 +153,20 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
           <label className="block text-sm font-medium text-foreground mb-2">
             {t('paymentMethod')}
           </label>
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-3 gap-1 p-1 bg-stone-100 rounded-xl">
             {(['mbway', 'cash', 'transfer'] as PaymentMethod[]).map((method) => (
-              <label
+              <button
                 key={method}
-                className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
+                type="button"
+                onClick={() => { setPaymentMethod(method); setError(''); }}
+                className={`py-2 px-2 rounded-lg text-xs font-medium text-center transition-all ${
                   paymentMethod === method
-                    ? 'border-teal-500 bg-teal-50'
-                    : 'border-stone-300 hover:border-teal-300'
+                    ? 'bg-white text-teal-800 shadow-sm font-bold'
+                    : 'text-stone-500 hover:text-stone-700'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="payment_method"
-                  value={method}
-                  checked={paymentMethod === method}
-                  onChange={() => { setPaymentMethod(method); setError(''); }}
-                  className="accent-teal-600"
-                />
-                <span className="text-sm font-medium text-foreground">
-                  {t(`payment${method.charAt(0).toUpperCase() + method.slice(1)}` as 'paymentMbway' | 'paymentCash' | 'paymentTransfer')}
-                </span>
-              </label>
+                {t(`payment${method.charAt(0).toUpperCase() + method.slice(1)}` as 'paymentMbway' | 'paymentCash' | 'paymentTransfer')}
+              </button>
             ))}
           </div>
         </div>

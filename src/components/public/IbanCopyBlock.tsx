@@ -30,23 +30,23 @@ export default function IbanCopyBlock({ iban, amount, title, note, totalLabel }:
       <p className="text-sm text-blue-700">{note}</p>
 
       {iban && (
-        <div className="bg-white rounded-lg px-3 py-2 text-sm flex items-center justify-between gap-2">
-          <div>
-            <span className="text-blue-700/60 mr-2">{t('bankIban')}:</span>
-            <span className="font-mono font-semibold text-blue-900">{iban}</span>
+        <div className="bg-white rounded-lg px-3 py-2 text-sm space-y-2">
+          <div className="space-y-0.5">
+            <p className="text-blue-700/60 text-xs">{t('bankIban')}</p>
+            <p className="font-mono font-semibold text-blue-900 break-all">{iban}</p>
           </div>
           <button
             onClick={copyIban}
-            className="flex items-center gap-1.5 text-xs font-medium text-blue-700 hover:text-blue-900 border border-blue-200 hover:border-blue-400 rounded-lg px-2.5 py-1 transition-colors bg-white shrink-0"
+            className="flex items-center gap-1 text-[11px] font-medium text-blue-700 hover:text-blue-900 border border-blue-200 hover:border-blue-400 rounded-md px-2 py-0.5 transition-colors bg-white"
           >
             {copied ? (
               <>
-                <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="2,9 6,13 14,4"/></svg>
+                <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="2,9 6,13 14,4"/></svg>
                 {t('copied')}
               </>
             ) : (
               <>
-                <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v6.5A1.5 1.5 0 0 0 3 11h2"/></svg>
+                <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v6.5A1.5 1.5 0 0 0 3 11h2"/></svg>
                 {t('copyNumber')}
               </>
             )}
