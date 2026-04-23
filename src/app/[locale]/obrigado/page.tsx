@@ -8,6 +8,7 @@ import { formatPhone } from '@/lib/utils';
 import { createAdminClient } from '@/lib/supabase/server';
 import { UUID_REGEX } from '@/lib/constants';
 import MbwayPaymentGuide from '@/components/public/MbwayPaymentGuide';
+import IbanCopyBlock from '@/components/public/IbanCopyBlock';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { env } from '@/env';
@@ -92,20 +93,13 @@ export default async function ObrigadoPage({ searchParams }: Props) {
           )}
 
           {paymentMethod === 'transfer' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-2">
-              <p className="font-semibold text-blue-800">{t('paymentTitleTransfer')}</p>
-              <p className="text-sm text-blue-700">{t('paymentTransferNote')}</p>
-              {env.BANK_IBAN && (
-                <div className="bg-white rounded-lg px-3 py-2 text-sm">
-                  <span className="text-blue-700/60 mr-2">{t('bankIban')}:</span>
-                  <span className="font-mono font-semibold text-blue-900">{env.BANK_IBAN}</span>
-                </div>
-              )}
-              <div className="bg-white rounded-lg px-3 py-2 text-sm">
-                <span className="text-blue-700/60 mr-2">{t('total')}:</span>
-                <span className="font-bold text-blue-900">{formatCurrency(total)}</span>
-              </div>
-            </div>
+            <IbanCopyBlock
+              iban={env.BANK_IBAN}
+              amount={formatCurrency(total)}
+              title={t('paymentTitleTransfer')}
+              note={t('paymentTransferNote')}
+              totalLabel={t('total')}
+            />
           )}
 
           <p className="text-center text-sm text-teal-900/50">{t('disclaimer')}</p>
