@@ -25,6 +25,7 @@ export async function getMonthlyHistory(
       .from('reservations')
       .select('paid_at, total_amount')
       .eq('paid', true)
+      .eq('cancelled', false)
       .in('menu_item_id', itemIds)
       .gte('paid_at', start.toISOString())
       .lte('paid_at', end.toISOString())

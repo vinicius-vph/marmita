@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { MenuItem, Category } from '@/types';
+import { MenuItem, Category, PaymentMethod } from '@/types';
 import MenuCard from './MenuCard';
 import { formatCurrency } from '@/lib/utils';
 
@@ -20,6 +20,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | ''>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -36,6 +37,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
     const phoneDigits = phone.replace(/\D/g, '');
     if (phoneDigits.length < 9) { setError(t('errorPhone')); return; }
     if (quantity < 1) { setError(t('errorQuantity')); return; }
+    if (!paymentMethod) { setError(t('errorPaymentMethod')); return; }
 
     setLoading(true);
     try {
@@ -47,6 +49,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
           customer_name: name.trim(),
           customer_phone: phone.trim(),
           quantity,
+          payment_method: paymentMethod,
         }),
       });
 
@@ -143,6 +146,36 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
             >
               +
             </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            {t('paymentMethod')}
+          </label>
+          <div className="flex flex-col gap-2">
+            {(['mbway', 'cash', 'transfer'] as PaymentMethod[]).map((method) => (
+              <label
+                key={method}
+                className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
+                  paymentMethod === method
+                    ? 'border-teal-500 bg-teal-50'
+                    : 'border-stone-300 hover:border-teal-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value={method}
+                  checked={paymentMethod === method}
+                  onChange={() => { setPaymentMethod(method); setError(''); }}
+                  className="accent-teal-600"
+                />
+                <span className="text-sm font-medium text-foreground">
+                  {t(`payment${method.charAt(0).toUpperCase() + method.slice(1)}` as 'paymentMbway' | 'paymentCash' | 'paymentTransfer')}
+                </span>
+              </label>
+            ))}
           </div>
         </div>
 

@@ -29,7 +29,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
   if (menuItemIds.length > 0) {
     const result = await supabase
       .from('reservations')
-      .select('*, menu_items(name, meal_date, price)')
+      .select('*, menu_items(name, meal_date, price, category)')
       .in('menu_item_id', menuItemIds)
       .order('created_at', { ascending: false });
     data = (result.data ?? []) as ReservationWithMenu[];

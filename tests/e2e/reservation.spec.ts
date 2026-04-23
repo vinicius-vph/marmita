@@ -11,6 +11,32 @@ test.describe('Reservation flow', () => {
     expect(hasForm + hasNoMeals).toBeGreaterThan(0);
   });
 
+  test('payment method field is visible and required', async ({ page }) => {
+    const form = page.locator('form');
+    if (await form.count() === 0) {
+      test.skip(true, 'No menu items available');
+      return;
+    }
+
+    await expect(page.getByText(/Forma de pagamento|Payment method|Forma de pago/i)).toBeVisible();
+    await expect(page.getByRole('radio', { name: /MBWay/i })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /Numerário|Cash|Efectivo/i })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /Transferência|Bank Transfer|Transferencia/i })).toBeVisible();
+  });
+
+  test('shows error when payment method is not selected', async ({ page }) => {
+    const form = page.locator('form');
+    if (await form.count() === 0) {
+      test.skip(true, 'No menu items available');
+      return;
+    }
+
+    await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
+    await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
+    await page.getByRole('button', { name: /Confirmar|Confirm/i }).click();
+    await expect(page.getByText(/selecione a forma de pagamento|select a payment method|seleccione una forma de pago/i)).toBeVisible();
+  });
+
   test('validates required fields before submission', async ({ page }) => {
     const form = page.locator('form');
     if (await form.count() === 0) {
@@ -76,6 +102,7 @@ test.describe('Reservation flow', () => {
     // Use real API — reservation is created in the test database
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
+    await page.getByRole('radio', { name: /MBWay/i }).click();
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
 
     await page.waitForURL(/\/obrigado/);
@@ -104,6 +131,7 @@ test.describe('/obrigado page', () => {
 
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
+    await page.getByRole('radio', { name: /MBWay/i }).click();
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
 
     await page.waitForURL(/\/obrigado\?id=/);
