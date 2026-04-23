@@ -24,18 +24,24 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const supabase = createAdminClient();
   const { data: reservation } = await supabase
     .from('reservations')
-    .select('customer_name, quantity, total_amount, menu_items(name, category)')
+    .select('customer_name, quantity, total_amount, menu_items(name, category, meal_date)')
     .eq('id', id)
     .single();
 
   if (!reservation) redirect('/');
 
-  const menuItem = reservation.menu_items as unknown as { name: string; category: string } | null;
+  const item = reservation.menu_items as unknown as { name: string; category: string; meal_date: string } | null;
+  if (item?.meal_date) {
+    const expiry = new Date(item.meal_date);
+    expiry.setDate(expiry.getDate() + 3);
+    if (new Date() > expiry) redirect('/');
+  }
+
   const nome = reservation.customer_name;
-  const prato = menuItem?.name ?? '';
+  const prato = item?.name ?? '';
   const quantidade = reservation.quantity;
   const total = reservation.total_amount;
-  const isBreakfast = menuItem?.category === 'breakfast';
+  const isBreakfast = item?.category === 'breakfast';
 
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
   const t = await getTranslations('ThankYou');
