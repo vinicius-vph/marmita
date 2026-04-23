@@ -24,7 +24,7 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const supabase = createAdminClient();
   const { data: reservation } = await supabase
     .from('reservations')
-    .select('customer_name, quantity, total_amount, menu_items(name, category)')
+    .select('customer_name, quantity, total_amount, payment_method, menu_items(name, category)')
     .eq('id', id)
     .single();
 
@@ -35,6 +35,7 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const prato = menuItem?.name ?? '';
   const quantidade = reservation.quantity;
   const total = reservation.total_amount;
+  const paymentMethod = reservation.payment_method as string;
   const isBreakfast = menuItem?.category === 'breakfast';
 
   const mbwayPhone = formatPhone(env.MBWAY_PHONE);
@@ -74,12 +75,38 @@ export default async function ObrigadoPage({ searchParams }: Props) {
             </div>
           </div>
 
-          <MbwayPaymentGuide
-            phone={mbwayPhone}
-            rawPhone={env.MBWAY_PHONE}
-            amount={formatCurrency(total)}
-            reference={reference}
-          />
+          {paymentMethod === 'mbway' && (
+            <MbwayPaymentGuide
+              phone={mbwayPhone}
+              rawPhone={env.MBWAY_PHONE}
+              amount={formatCurrency(total)}
+              reference={reference}
+            />
+          )}
+
+          {paymentMethod === 'cash' && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <p className="font-semibold text-amber-800 mb-1">{t('paymentTitleCash')}</p>
+              <p className="text-sm text-amber-700">{t('paymentCashNote')}</p>
+            </div>
+          )}
+
+          {paymentMethod === 'transfer' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-2">
+              <p className="font-semibold text-blue-800">{t('paymentTitleTransfer')}</p>
+              <p className="text-sm text-blue-700">{t('paymentTransferNote')}</p>
+              {env.BANK_IBAN && (
+                <div className="bg-white rounded-lg px-3 py-2 text-sm">
+                  <span className="text-blue-700/60 mr-2">{t('bankIban')}:</span>
+                  <span className="font-mono font-semibold text-blue-900">{env.BANK_IBAN}</span>
+                </div>
+              )}
+              <div className="bg-white rounded-lg px-3 py-2 text-sm">
+                <span className="text-blue-700/60 mr-2">{t('total')}:</span>
+                <span className="font-bold text-blue-900">{formatCurrency(total)}</span>
+              </div>
+            </div>
+          )}
 
           <p className="text-center text-sm text-teal-900/50">{t('disclaimer')}</p>
 

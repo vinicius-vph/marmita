@@ -1,4 +1,5 @@
 export type Category = 'meals' | 'breakfast';
+export type PaymentMethod = 'mbway' | 'cash' | 'transfer';
 
 export interface MenuItem {
   id: string;
@@ -22,11 +23,13 @@ export interface Reservation {
   total_amount: number;
   paid: boolean;
   paid_at: string | null;
+  payment_method: PaymentMethod;
+  cancelled: boolean;
   created_at: string;
 }
 
 export interface ReservationWithMenu extends Reservation {
-  menu_items: Pick<MenuItem, 'name' | 'meal_date' | 'price'>;
+  menu_items: Pick<MenuItem, 'name' | 'meal_date' | 'price' | 'category'>;
 }
 
 export interface FundraisingSummary {
@@ -47,4 +50,5 @@ export interface ReservationFormData {
   customer_phone: string;
   quantity: number;
   menu_item_id: string;
+  payment_method: PaymentMethod;
 }

@@ -23,4 +23,5 @@ export const env = {
   WHATSAPP_PHONE: process.env.WHATSAPP_PHONE ?? '',
   INSTAGRAM_URL: process.env.INSTAGRAM_URL ?? 'https://www.instagram.com',
   FACEBOOK_URL: process.env.FACEBOOK_URL ?? 'https://www.facebook.com',
+  BANK_IBAN: process.env.BANK_IBAN ?? '',
 };
