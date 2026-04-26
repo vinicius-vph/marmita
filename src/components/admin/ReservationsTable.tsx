@@ -3,15 +3,28 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { ReservationWithMenu } from '@/types';
+import { format } from 'date-fns';
+import { pt, enUS, es } from 'date-fns/locale';
+import type { Locale } from 'date-fns';
+import { Category, ReservationWithMenu } from '@/types';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 
 type StatusFilter = 'all' | 'pending' | 'paid';
 
-export default function ReservationsTable({ reservations: initial }: { reservations: ReservationWithMenu[] }) {
+const localeMap: Record<string, Locale> = { pt, en: enUS, es };
+
+interface Props {
+  reservations: ReservationWithMenu[];
+  category: Category;
+}
+
+export default function ReservationsTable({ reservations: initial, category }: Props) {
   const router = useRouter();
   const t = useTranslations('ReservationsTable');
+  const tReport = useTranslations('ReservationsReport');
+  const tCat = useTranslations('CategoryTabs');
   const locale = useLocale();
+  const dfLocale = localeMap[locale] ?? pt;
   const [reservations, setReservations] = useState(initial);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [filterDish, setFilterDish] = useState('');
@@ -20,6 +33,7 @@ export default function ReservationsTable({ reservations: initial }: { reservati
   const [confirming, setConfirming] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
 
   const uniqueDishes = useMemo(() => {
     const seen = new Set<string>();
@@ -92,6 +106,234 @@ export default function ReservationsTable({ reservations: initial }: { reservati
     transfer: t('paymentTransfer'),
   };
 
+  const statusLabel = (r: ReservationWithMenu) =>
+    r.cancelled ? t('cancelledBadge') : r.paid ? tReport('statusPaid') : tReport('statusPending');
+
+  async function handleDownloadPdf() {
+    setGeneratingPdf(true);
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      const MARGIN = 15;
+      const PAGE_W = 210;
+      const PAGE_H = 297;
+      const CONTENT_W = PAGE_W - MARGIN * 2;
+
+      doc.setFillColor(19, 78, 74);
+      doc.rect(0, 0, PAGE_W, 28, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.setTextColor(255, 255, 255);
+      doc.text('Marmita Solidária', MARGIN, 12);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(tReport('reportTitle'), MARGIN, 21);
+
+      const datePattern = locale === 'en' ? 'MMMM d, yyyy' : "d 'de' MMMM 'de' yyyy";
+      const dateStr = format(new Date(), datePattern, { locale: dfLocale });
+      doc.setFontSize(8);
+      doc.text(`${tReport('generatedOn')} ${dateStr}`, PAGE_W - MARGIN, 21, { align: 'right' });
+      doc.text(tCat(category), PAGE_W - MARGIN, 27, { align: 'right' });
+
+      const filteredPaid = filtered.filter((r) => r.paid && !r.cancelled).reduce((s, r) => s + r.total_amount, 0);
+      const filteredPending = filtered.filter((r) => !r.paid && !r.cancelled).reduce((s, r) => s + r.total_amount, 0);
+
+      const statsData = [
+        { lbl: tReport('summaryCount'), val: String(filtered.length) },
+        { lbl: tReport('summaryReceived'), val: formatCurrency(filteredPaid) },
+        { lbl: tReport('summaryPending'), val: formatCurrency(filteredPending) },
+      ];
+
+      statsData.forEach(({ lbl, val }, i) => {
+        const x = MARGIN + i * 61;
+        doc.setFillColor(240, 247, 247);
+        doc.rect(x, 35, 58, 15, 'F');
+        doc.setDrawColor(199, 221, 221);
+        doc.setLineWidth(0.2);
+        doc.rect(x, 35, 58, 15, 'D');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(90, 138, 138);
+        doc.text(lbl.toUpperCase(), x + 4, 41);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(26, 58, 58);
+        doc.text(val, x + 4, 47);
+      });
+
+      const statusFilterLabel =
+        statusFilter === 'all' ? t('filterAll') : statusFilter === 'pending' ? t('filterPending') : t('filterPaid');
+      const filterLines: Array<[string, string]> = [
+        [tReport('filterStatus'), statusFilterLabel],
+        [tReport('filterDish'), filterDish || tReport('filterAny')],
+        [tReport('filterPayment'), filterPayment ? paymentLabel[filterPayment] ?? filterPayment : tReport('filterAny')],
+        [tReport('filterMealDate'), filterMealDate ? formatDate(filterMealDate, locale) : tReport('filterAny')],
+      ];
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(26, 58, 58);
+      doc.text(tReport('filtersTitle').toUpperCase(), MARGIN, 58);
+
+      filterLines.forEach(([lbl, val], i) => {
+        const x = MARGIN + (i % 2) * (CONTENT_W / 2);
+        const y = 64 + Math.floor(i / 2) * 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(90, 138, 138);
+        doc.text(`${lbl}:`, x, y);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(26, 58, 58);
+        doc.text(val, x + 28, y);
+      });
+
+      let cursorY = 80;
+      const ROW_H = 7;
+      const COL_X = [
+        MARGIN,
+        MARGIN + 50,
+        MARGIN + 80,
+        MARGIN + 108,
+        MARGIN + 128,
+        MARGIN + 142,
+        MARGIN + 162,
+      ];
+      const colWidths = [
+        COL_X[1] - COL_X[0],
+        COL_X[2] - COL_X[1],
+        COL_X[3] - COL_X[2],
+        COL_X[4] - COL_X[3],
+        COL_X[5] - COL_X[4],
+        COL_X[6] - COL_X[5],
+        MARGIN + CONTENT_W - COL_X[6],
+      ];
+
+      const drawTableHeader = (y: number) => {
+        doc.setFillColor(225, 242, 242);
+        doc.rect(MARGIN, y, CONTENT_W, ROW_H, 'F');
+        doc.setDrawColor(153, 196, 196);
+        doc.setLineWidth(0.3);
+        doc.rect(MARGIN, y, CONTENT_W, ROW_H, 'D');
+        doc.setLineWidth(0.15);
+        for (let i = 1; i < COL_X.length; i++) {
+          doc.line(COL_X[i], y, COL_X[i], y + ROW_H);
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(26, 58, 58);
+        const headers = [
+          tReport('colCustomer'),
+          tReport('colPhone'),
+          tReport('colDish'),
+          tReport('colMealDate'),
+          tReport('colQty'),
+          tReport('colTotal'),
+          tReport('colStatus'),
+        ];
+        headers.forEach((h, i) => {
+          doc.text(h, COL_X[i] + 1.5, y + 4.5);
+        });
+      };
+
+      drawTableHeader(cursorY);
+      cursorY += ROW_H;
+
+      const truncate = (text: string, w: number) => {
+        const maxChars = Math.floor(w / 1.5);
+        return text.length > maxChars ? text.slice(0, maxChars - 1) + '…' : text;
+      };
+
+      if (filtered.length === 0) {
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+        doc.setTextColor(120, 120, 120);
+        doc.text(t('empty'), PAGE_W / 2, cursorY + 8, { align: 'center' });
+      } else {
+        filtered.forEach((r, idx) => {
+          if (cursorY + ROW_H > PAGE_H - 18) {
+            doc.addPage();
+            cursorY = MARGIN;
+            drawTableHeader(cursorY);
+            cursorY += ROW_H;
+          }
+
+          if (idx % 2 === 0) {
+            doc.setFillColor(248, 252, 252);
+            doc.rect(MARGIN, cursorY, CONTENT_W, ROW_H, 'F');
+          }
+          doc.setDrawColor(209, 232, 232);
+          doc.setLineWidth(0.1);
+          doc.rect(MARGIN, cursorY, CONTENT_W, ROW_H, 'D');
+          for (let i = 1; i < COL_X.length; i++) {
+            doc.line(COL_X[i], cursorY, COL_X[i], cursorY + ROW_H);
+          }
+
+          const dishName = r.menu_items?.name ?? '—';
+          const mealDate = r.menu_items?.meal_date
+            ? format(new Date(r.menu_items.meal_date), 'dd/MM/yyyy')
+            : '—';
+
+          const cells = [
+            truncate(r.customer_name, colWidths[0]),
+            truncate(r.customer_phone, colWidths[1]),
+            truncate(dishName, colWidths[2]),
+            mealDate,
+            String(r.quantity),
+            formatCurrency(r.total_amount),
+            statusLabel(r),
+          ];
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7);
+          doc.setTextColor(26, 58, 58);
+          cells.forEach((val, i) => {
+            const align = i >= 4 ? 'right' : 'left';
+            const x = align === 'right' ? COL_X[i] + colWidths[i] - 1.5 : COL_X[i] + 1.5;
+            doc.text(val, x, cursorY + 4.5, { align });
+          });
+
+          cursorY += ROW_H;
+        });
+
+        const totalAll = filtered.reduce((s, r) => s + r.total_amount, 0);
+        if (cursorY + ROW_H > PAGE_H - 18) {
+          doc.addPage();
+          cursorY = MARGIN;
+        }
+        doc.setFillColor(209, 232, 232);
+        doc.rect(MARGIN, cursorY, CONTENT_W, ROW_H, 'F');
+        doc.setDrawColor(153, 196, 196);
+        doc.setLineWidth(0.3);
+        doc.rect(MARGIN, cursorY, CONTENT_W, ROW_H, 'D');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(26, 58, 58);
+        doc.text(tReport('reportTotal'), MARGIN + 3, cursorY + 4.5);
+        doc.text(formatCurrency(totalAll), MARGIN + CONTENT_W - 3, cursorY + 4.5, { align: 'right' });
+      }
+
+      const pageCount = doc.getNumberOfPages();
+      for (let p = 1; p <= pageCount; p++) {
+        doc.setPage(p);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(160, 160, 160);
+        doc.text('Marmita Solidária — Primeira Igreja Baptista de Vila Real', PAGE_W / 2, 290, { align: 'center' });
+        doc.text(`${p} / ${pageCount}`, PAGE_W - MARGIN, 290, { align: 'right' });
+      }
+
+      const stamp = format(new Date(), 'yyyyMMdd-HHmm');
+      doc.save(`reservas-${category}-${stamp}.pdf`);
+    } finally {
+      setGeneratingPdf(false);
+    }
+  }
+
   const selectClass = 'border border-stone-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-400';
 
   return (
@@ -152,6 +394,16 @@ export default function ReservationsTable({ reservations: initial }: { reservati
             ))}
           </select>
         </div>
+
+        <button
+          onClick={handleDownloadPdf}
+          disabled={generatingPdf || reservations.length === 0}
+          className="flex items-center gap-1.5 px-3 py-2 text-xs bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed font-medium ml-auto"
+          aria-label={tReport('exportButton')}
+        >
+          <span aria-hidden="true">⬇</span>
+          {generatingPdf ? tReport('generating') : tReport('exportButton')}
+        </button>
       </div>
 
       {filtered.length === 0 ? (

@@ -157,6 +157,31 @@
     "cancelledBadge": "Cancelled",
     "cancelling": "Cancelling..."
   },
+  "ReservationsReport": {
+    "exportButton": "Export PDF",
+    "generating": "Generating...",
+    "reportTitle": "Reservations Report",
+    "generatedOn": "Generated on:",
+    "summaryCount": "Reservations",
+    "summaryReceived": "Received",
+    "summaryPending": "Pending",
+    "filtersTitle": "Active filters",
+    "filterStatus": "Status",
+    "filterDish": "Dish",
+    "filterPayment": "Payment",
+    "filterMealDate": "Date",
+    "filterAny": "All",
+    "colCustomer": "Customer",
+    "colPhone": "Phone",
+    "colDish": "Dish",
+    "colMealDate": "Date",
+    "colQty": "Qty",
+    "colTotal": "Total",
+    "colStatus": "Status",
+    "statusPaid": "Paid",
+    "statusPending": "Pending",
+    "reportTotal": "Total"
+  },
   "AdminMenu": {
     "title": "Weekly Menu",
     "error": "Error loading menu: {message}"

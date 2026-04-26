@@ -157,6 +157,31 @@
     "cancelledBadge": "Cancelada",
     "cancelling": "Cancelando..."
   },
+  "ReservationsReport": {
+    "exportButton": "Exportar PDF",
+    "generating": "Generando...",
+    "reportTitle": "Informe de Reservas",
+    "generatedOn": "Generado el:",
+    "summaryCount": "Reservas",
+    "summaryReceived": "Recibido",
+    "summaryPending": "Pendiente",
+    "filtersTitle": "Filtros aplicados",
+    "filterStatus": "Estado",
+    "filterDish": "Plato",
+    "filterPayment": "Pago",
+    "filterMealDate": "Fecha",
+    "filterAny": "Todos",
+    "colCustomer": "Cliente",
+    "colPhone": "Teléfono",
+    "colDish": "Plato",
+    "colMealDate": "Fecha",
+    "colQty": "Cant.",
+    "colTotal": "Total",
+    "colStatus": "Estado",
+    "statusPaid": "Pagado",
+    "statusPending": "Pendiente",
+    "reportTotal": "Total"
+  },
   "AdminMenu": {
     "title": "Menú Semanal",
     "error": "Error al cargar el menú: {message}"
