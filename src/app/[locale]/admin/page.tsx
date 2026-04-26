@@ -47,7 +47,11 @@ export default async function AdminDashboard({ searchParams }: Props) {
   return (
     <div>
       <h2 className="text-xl font-bold text-stone-800 mb-6">{t('title')}</h2>
-      <ReservationsTable key={category} reservations={(data ?? []) as ReservationWithMenu[]} />
+      <ReservationsTable
+        key={category}
+        reservations={(data ?? []) as ReservationWithMenu[]}
+        category={category}
+      />
     </div>
   );
 }

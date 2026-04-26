@@ -56,4 +56,17 @@ test.describe('Admin dashboard', () => {
     await breakfastBtn.click();
     await expect(page).toHaveURL(/category=breakfast/);
   });
+
+  test('export PDF button is visible when reservations exist', async ({ page }) => {
+    const exportBtn = page.getByRole('button', { name: /Exportar PDF|Export PDF/i });
+    const hasReservations = await page.getByRole('button', { name: /Confirmar pagamento|Confirm payment|Confirmar pago/i }).count();
+    const hasPaidBadge = await page.locator('span').filter({ hasText: /✓ Pago|✓ Paid|✓ Pagado/i }).count();
+
+    if (hasReservations === 0 && hasPaidBadge === 0) {
+      await expect(exportBtn).toBeDisabled();
+    } else {
+      await expect(exportBtn).toBeVisible();
+      await expect(exportBtn).toBeEnabled();
+    }
+  });
 });
