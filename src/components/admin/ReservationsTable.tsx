@@ -13,6 +13,16 @@ type StatusFilter = 'all' | 'pending' | 'paid';
 
 const localeMap: Record<string, Locale> = { pt, en: enUS, es };
 
+// jsPDF's default helvetica font uses WinAnsi (CP1252). Emoji and other non-Latin-1
+// glyphs render as garbage characters and break inter-character spacing — strip them
+// before drawing any dynamic text.
+function pdfSafe(s: string): string {
+  return s
+    .replace(/[^\x00-\xFF]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 interface Props {
   reservations: ReservationWithMenu[];
   category: Category;
@@ -34,6 +44,7 @@ export default function ReservationsTable({ reservations: initial, category }: P
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [generatingExcel, setGeneratingExcel] = useState(false);
 
   const uniqueDishes = useMemo(() => {
     const seen = new Set<string>();
@@ -136,7 +147,7 @@ export default function ReservationsTable({ reservations: initial, category }: P
       const dateStr = format(new Date(), datePattern, { locale: dfLocale });
       doc.setFontSize(8);
       doc.text(`${tReport('generatedOn')} ${dateStr}`, PAGE_W - MARGIN, 21, { align: 'right' });
-      doc.text(tCat(category), PAGE_W - MARGIN, 27, { align: 'right' });
+      doc.text(pdfSafe(tCat(category)), PAGE_W - MARGIN, 27, { align: 'right' });
 
       const filteredPaid = filtered.filter((r) => r.paid && !r.cancelled).reduce((s, r) => s + r.total_amount, 0);
       const filteredPending = filtered.filter((r) => !r.paid && !r.cancelled).reduce((s, r) => s + r.total_amount, 0);
@@ -189,7 +200,7 @@ export default function ReservationsTable({ reservations: initial, category }: P
         doc.text(`${lbl}:`, x, y);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(26, 58, 58);
-        doc.text(val, x + 28, y);
+        doc.text(pdfSafe(val), x + 28, y);
       });
 
       let cursorY = 80;
@@ -279,13 +290,13 @@ export default function ReservationsTable({ reservations: initial, category }: P
             : '—';
 
           const cells = [
-            truncate(r.customer_name, colWidths[0]),
-            truncate(r.customer_phone, colWidths[1]),
-            truncate(dishName, colWidths[2]),
+            truncate(pdfSafe(r.customer_name), colWidths[0]),
+            truncate(pdfSafe(r.customer_phone), colWidths[1]),
+            truncate(pdfSafe(dishName), colWidths[2]),
             mealDate,
             String(r.quantity),
             formatCurrency(r.total_amount),
-            statusLabel(r),
+            pdfSafe(statusLabel(r)),
           ];
 
           doc.setFont('helvetica', 'normal');
@@ -331,6 +342,169 @@ export default function ReservationsTable({ reservations: initial, category }: P
       doc.save(`reservas-${category}-${stamp}.pdf`);
     } finally {
       setGeneratingPdf(false);
+    }
+  }
+
+  async function handleDownloadExcel() {
+    setGeneratingExcel(true);
+    try {
+      const ExcelJS = (await import('exceljs')).default;
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Marmita Solidária';
+      workbook.created = new Date();
+
+      const sheet = workbook.addWorksheet(tReport('sheetName'), {
+        views: [{ state: 'frozen', ySplit: 1 }],
+      });
+
+      const headers = [
+        tReport('colCustomer'),
+        tReport('colPhone'),
+        tReport('colDish'),
+        tReport('colMealDate'),
+        tReport('colQty'),
+        tReport('colTotal'),
+        tReport('colPayment'),
+        tReport('colStatus'),
+        tReport('colReservedAt'),
+      ];
+
+      sheet.columns = [
+        { key: 'customer', width: 28 },
+        { key: 'phone', width: 18 },
+        { key: 'dish', width: 28 },
+        { key: 'mealDate', width: 14 },
+        { key: 'qty', width: 8 },
+        { key: 'total', width: 14 },
+        { key: 'payment', width: 16 },
+        { key: 'status', width: 14 },
+        { key: 'reservedAt', width: 22 },
+      ];
+
+      const headerRow = sheet.addRow(headers);
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF134E4A' } };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FF99C4C4' } },
+          bottom: { style: 'thin', color: { argb: 'FF99C4C4' } },
+          left: { style: 'thin', color: { argb: 'FF99C4C4' } },
+          right: { style: 'thin', color: { argb: 'FF99C4C4' } },
+        };
+      });
+      headerRow.height = 22;
+
+      filtered.forEach((r) => {
+        const mealDate = r.menu_items?.meal_date ? new Date(r.menu_items.meal_date) : null;
+        const reservedAt = r.created_at ? new Date(r.created_at) : null;
+        const status = r.cancelled
+          ? t('cancelledBadge')
+          : r.paid
+          ? tReport('statusPaid')
+          : tReport('statusPending');
+
+        const row = sheet.addRow({
+          customer: r.customer_name,
+          phone: r.customer_phone,
+          dish: r.menu_items?.name ?? '—',
+          mealDate,
+          qty: r.quantity,
+          total: r.total_amount,
+          payment: paymentLabel[r.payment_method] ?? r.payment_method,
+          status,
+          reservedAt,
+        });
+
+        row.getCell('mealDate').numFmt = 'dd/mm/yyyy';
+        row.getCell('reservedAt').numFmt = 'dd/mm/yyyy hh:mm';
+        row.getCell('total').numFmt = '#,##0.00 "€"';
+        row.getCell('qty').alignment = { horizontal: 'center' };
+
+        const statusCell = row.getCell('status');
+        statusCell.alignment = { horizontal: 'center' };
+        if (r.cancelled) {
+          statusCell.font = { color: { argb: 'FF78716C' }, bold: true };
+        } else if (r.paid) {
+          statusCell.font = { color: { argb: 'FF15803D' }, bold: true };
+        } else {
+          statusCell.font = { color: { argb: 'FFB45309' }, bold: true };
+        }
+      });
+
+      if (filtered.length > 0) {
+        const totalRow = sheet.addRow({
+          customer: tReport('reportTotal'),
+          total: filtered.reduce((s, r) => s + r.total_amount, 0),
+        });
+        totalRow.font = { bold: true };
+        totalRow.getCell('total').numFmt = '#,##0.00 "€"';
+        totalRow.eachCell((cell) => {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1E8E8' } };
+        });
+      }
+
+      sheet.autoFilter = {
+        from: { row: 1, column: 1 },
+        to: { row: 1, column: headers.length },
+      };
+
+      const metaSheet = workbook.addWorksheet(tReport('metaSheetName'));
+      metaSheet.columns = [
+        { width: 24 },
+        { width: 40 },
+      ];
+
+      const datePattern = locale === 'en' ? 'MMMM d, yyyy' : "d 'de' MMMM 'de' yyyy";
+      const generatedStr = format(new Date(), datePattern, { locale: dfLocale });
+      const statusFilterLabel =
+        statusFilter === 'all' ? t('filterAll') : statusFilter === 'pending' ? t('filterPending') : t('filterPaid');
+      const filteredPaid = filtered.filter((r) => r.paid && !r.cancelled).reduce((s, r) => s + r.total_amount, 0);
+      const filteredPending = filtered.filter((r) => !r.paid && !r.cancelled).reduce((s, r) => s + r.total_amount, 0);
+
+      const metaRows: Array<[string, string | number]> = [
+        [tReport('reportTitle'), ''],
+        [tReport('generatedOn'), generatedStr],
+        [t('filterAll'), tCat(category)],
+        ['', ''],
+        [tReport('filtersTitle'), ''],
+        [tReport('filterStatus'), statusFilterLabel],
+        [tReport('filterDish'), filterDish || tReport('filterAny')],
+        [tReport('filterPayment'), filterPayment ? paymentLabel[filterPayment] ?? filterPayment : tReport('filterAny')],
+        [tReport('filterMealDate'), filterMealDate ? formatDate(filterMealDate, locale) : tReport('filterAny')],
+        ['', ''],
+        [tReport('summaryCount'), filtered.length],
+        [tReport('summaryReceived'), filteredPaid],
+        [tReport('summaryPending'), filteredPending],
+      ];
+
+      metaRows.forEach(([label, value], i) => {
+        const row = metaSheet.addRow([label, value]);
+        if (i === 0 || label === tReport('filtersTitle')) {
+          row.font = { bold: true, size: i === 0 ? 13 : 11, color: { argb: 'FF134E4A' } };
+        } else {
+          row.getCell(1).font = { bold: true, color: { argb: 'FF5A8A8A' } };
+        }
+        if (label === tReport('summaryReceived') || label === tReport('summaryPending')) {
+          row.getCell(2).numFmt = '#,##0.00 "€"';
+        }
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const stamp = format(new Date(), 'yyyyMMdd-HHmm');
+      link.href = url;
+      link.download = `reservas-${category}-${stamp}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } finally {
+      setGeneratingExcel(false);
     }
   }
 
@@ -395,15 +569,26 @@ export default function ReservationsTable({ reservations: initial, category }: P
           </select>
         </div>
 
-        <button
-          onClick={handleDownloadPdf}
-          disabled={generatingPdf || reservations.length === 0}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed font-medium ml-auto"
-          aria-label={tReport('exportButton')}
-        >
-          <span aria-hidden="true">⬇</span>
-          {generatingPdf ? tReport('generating') : tReport('exportButton')}
-        </button>
+        <div className="flex gap-2 ml-auto">
+          <button
+            onClick={handleDownloadPdf}
+            disabled={generatingPdf || generatingExcel || reservations.length === 0}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed font-medium"
+            aria-label={tReport('exportButton')}
+          >
+            <span aria-hidden="true">⬇</span>
+            {generatingPdf ? tReport('generating') : tReport('exportButton')}
+          </button>
+          <button
+            onClick={handleDownloadExcel}
+            disabled={generatingPdf || generatingExcel || reservations.length === 0}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed font-medium"
+            aria-label={tReport('exportExcelButton')}
+          >
+            <span aria-hidden="true">⬇</span>
+            {generatingExcel ? tReport('generating') : tReport('exportExcelButton')}
+          </button>
+        </div>
       </div>
 
       {filtered.length === 0 ? (
