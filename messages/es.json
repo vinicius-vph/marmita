@@ -159,6 +159,7 @@
   },
   "ReservationsReport": {
     "exportButton": "Exportar PDF",
+    "exportExcelButton": "Exportar Excel",
     "generating": "Generando...",
     "reportTitle": "Informe de Reservas",
     "generatedOn": "Generado el:",
@@ -174,13 +175,17 @@
     "colCustomer": "Cliente",
     "colPhone": "Teléfono",
     "colDish": "Plato",
-    "colMealDate": "Fecha",
+    "colMealDate": "Fecha comida",
     "colQty": "Cant.",
     "colTotal": "Total",
+    "colPayment": "Pago",
     "colStatus": "Estado",
+    "colReservedAt": "Reservado el",
     "statusPaid": "Pagado",
     "statusPending": "Pendiente",
-    "reportTotal": "Total"
+    "reportTotal": "Total",
+    "sheetName": "Reservas",
+    "metaSheetName": "Resumen"
   },
   "AdminMenu": {
     "title": "Menú Semanal",
