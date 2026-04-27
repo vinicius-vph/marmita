@@ -56,4 +56,21 @@ test.describe('Admin dashboard', () => {
     await breakfastBtn.click();
     await expect(page).toHaveURL(/category=breakfast/);
   });
+
+  test('export PDF and Excel buttons appear with reservations', async ({ page }) => {
+    const pdfBtn = page.getByRole('button', { name: /Exportar PDF|Export PDF/i });
+    const excelBtn = page.getByRole('button', { name: /Exportar Excel|Export Excel/i });
+    const hasReservations = await page.getByRole('button', { name: /Confirmar pagamento|Confirm payment|Confirmar pago/i }).count();
+    const hasPaidBadge = await page.locator('span').filter({ hasText: /✓ Pago|✓ Paid|✓ Pagado/i }).count();
+
+    if (hasReservations === 0 && hasPaidBadge === 0) {
+      await expect(pdfBtn).toBeDisabled();
+      await expect(excelBtn).toBeDisabled();
+    } else {
+      await expect(pdfBtn).toBeVisible();
+      await expect(pdfBtn).toBeEnabled();
+      await expect(excelBtn).toBeVisible();
+      await expect(excelBtn).toBeEnabled();
+    }
+  });
 });
