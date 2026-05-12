@@ -62,3 +62,6 @@ supabase-schema.sql
 
 # supabase local state (docker)
 /.supabase
+
+# internal docs (audits, reports — kept local only)
+/docs
