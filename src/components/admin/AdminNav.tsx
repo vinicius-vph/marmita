@@ -3,13 +3,15 @@
 import { useSearchParams } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { isFeatureEnabled } from '@/lib/features';
 import LogoutButton from './LogoutButton';
 
 export default function AdminNav() {
   const searchParams = useSearchParams();
+  const breakfastEnabled = isFeatureEnabled('breakfast');
   const category = searchParams.get('category') === 'breakfast' ? 'breakfast' : 'meals';
   const t = useTranslations('AdminLayout');
-  const navLink = (path: string) => `${path}?category=${category}`;
+  const navLink = (path: string) => (breakfastEnabled ? `${path}?category=${category}` : path);
 
   return (
     <nav className="flex items-center justify-between pb-4 text-sm">

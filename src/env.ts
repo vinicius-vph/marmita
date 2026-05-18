@@ -1,3 +1,5 @@
+import { ALL_FEATURES, isFeatureEnabled } from '@/lib/features';
+
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) throw new Error(`Missing required environment variable: ${name}`);
@@ -24,4 +26,5 @@ export const env = {
   INSTAGRAM_URL: process.env.INSTAGRAM_URL ?? 'https://www.instagram.com',
   FACEBOOK_URL: process.env.FACEBOOK_URL ?? 'https://www.facebook.com',
   BANK_IBAN: process.env.BANK_IBAN ?? '',
+  ENABLED_FEATURES: ALL_FEATURES.filter(isFeatureEnabled),
 };

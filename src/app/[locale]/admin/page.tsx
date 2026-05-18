@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
+import { isFeatureEnabled } from '@/lib/features';
 import ReservationsTable from '@/components/admin/ReservationsTable';
 import type { ReservationWithMenu, Category } from '@/types';
 
@@ -11,7 +12,8 @@ interface Props {
 
 export default async function AdminDashboard({ searchParams }: Props) {
   const params = await searchParams;
-  const category: Category = params.category === 'breakfast' ? 'breakfast' : 'meals';
+  const category: Category =
+    params.category === 'breakfast' && isFeatureEnabled('breakfast') ? 'breakfast' : 'meals';
   const supabase = createAdminClient();
   const t = await getTranslations('AdminDashboard');
 
