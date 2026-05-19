@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
+import { isFeatureEnabled } from '@/lib/features';
 import GoalForm from '@/components/admin/GoalForm';
 import type { FundraisingSummary, Category } from '@/types';
 
@@ -11,7 +12,8 @@ interface Props {
 
 export default async function AdminMetaPage({ searchParams }: Props) {
   const params = await searchParams;
-  const category: Category = params.category === 'breakfast' ? 'breakfast' : 'meals';
+  const category: Category =
+    params.category === 'breakfast' && isFeatureEnabled('breakfast') ? 'breakfast' : 'meals';
   const supabase = createAdminClient();
   const t = await getTranslations('AdminMeta');
 

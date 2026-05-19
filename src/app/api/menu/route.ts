@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
 import { VALID_CATEGORIES } from '@/lib/constants';
+import { isFeatureEnabled } from '@/lib/features';
 import { uploadImage } from '@/lib/image-upload';
 import type { Category } from '@/types';
 
@@ -47,6 +48,10 @@ export async function POST(req: NextRequest) {
   const category: Category = VALID_CATEGORIES.includes(rawCategory as Category)
     ? (rawCategory as Category)
     : 'meals';
+
+  if (category === 'breakfast' && !isFeatureEnabled('breakfast')) {
+    return NextResponse.json({ error: 'Feature disabled' }, { status: 403 });
+  }
 
   const supabase = createAdminClient();
 

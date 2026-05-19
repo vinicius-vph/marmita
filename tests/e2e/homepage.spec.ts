@@ -21,9 +21,9 @@ test.describe('Homepage', () => {
     await expect(homeLink).toBeVisible();
   });
 
-  test('shows category tabs', async ({ page }) => {
-    await expect(page.getByText(/Refeições|Meals|Comidas/i)).toBeVisible();
-    await expect(page.getByText(/Café da Manhã|Breakfast|Desayuno/i)).toBeVisible();
+  test('hides breakfast tab when feature flag is off', async ({ page }) => {
+    // Default in CI: NEXT_PUBLIC_ENABLED_FEATURES is empty, so breakfast UI is hidden.
+    await expect(page.getByRole('button', { name: /Café da Manhã|Breakfast|Desayuno/i })).toHaveCount(0);
   });
 
   test('footer shows MBWay payment info with logo', async ({ page }) => {

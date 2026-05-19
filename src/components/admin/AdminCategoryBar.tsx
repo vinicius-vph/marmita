@@ -3,11 +3,15 @@
 import { useSearchParams } from 'next/navigation';
 import { usePathname, Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { isFeatureEnabled } from '@/lib/features';
 
 export default function AdminCategoryBar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const tCat = useTranslations('CategoryTabs');
+
+  if (!isFeatureEnabled('breakfast')) return null;
+
   const category = searchParams.get('category') === 'breakfast' ? 'breakfast' : 'meals';
 
   return (
