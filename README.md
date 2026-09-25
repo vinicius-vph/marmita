@@ -30,7 +30,7 @@ npm install
 
 ```bash
 cp .env.example .env.local
-# Preencher ADMIN_PASSWORD e AUTH_SECRET (ver comentários no ficheiro)
+# Preencher ADMIN_PASSWORD_HASH e AUTH_SECRET (ver comentários no ficheiro)
 ```
 
 ### 3. Iniciar a base de dados local
@@ -82,20 +82,46 @@ Após criar e editar o ficheiro, aplicar localmente:
 npm run db:reset
 ```
 
-Para aplicar em produção: executar o ficheiro SQL no Supabase SQL Editor.
+Em produção, o workflow `.github/workflows/migrate.yml` corre `scripts/migrate.js` a cada push para `main` que altere `supabase/migrations/**`. O script aplica só as migrations pendentes (regista-as em `supabase_migrations.schema_migrations`). Se falhar, executar o ficheiro SQL manualmente no Supabase SQL Editor.
+
+---
+
+## Funcionalidades
+
+- **Público:** menu de pratos, reserva com escolha de método de pagamento (MBWay, transferência bancária/IBAN ou numerário), progresso da angariação, PT/EN/ES.
+- **Admin (`/admin`):** dashboard de reservas com filtros (estado, prato, método de pagamento, data), confirmação de pagamento, cancelamento de reservas, relatório em PDF e Excel, gestão de pratos e do objetivo de angariação.
+- **Módulo Café da Manhã (`breakfast`):** desativado por defeito — ver `NEXT_PUBLIC_ENABLED_FEATURES`.
+
+---
+
+## Testes E2E
+
+```bash
+npm run test:e2e        # Playwright (arranca `npm run dev` se não estiver ativo)
+npm run test:e2e:ui     # modo interativo
+```
+
+Os testes de admin precisam de `ADMIN_PASSWORD` (password em texto simples correspondente ao `ADMIN_PASSWORD_HASH`) no ambiente. Definir `RATE_LIMIT_DISABLED=true` em CI para não poluir a tabela `login_attempts`.
 
 ---
 
 ## Variáveis de ambiente
 
-| Variável | Descrição |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave pública (anon) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Chave de serviço (nunca expor ao browser) |
-| `ADMIN_PASSWORD` | Senha de acesso à área `/admin` |
-| `AUTH_SECRET` | Segredo JWT — gerar com `openssl rand -hex 32` |
-| `MBWAY_PHONE` | Número MBWay para receber pagamentos |
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Sim | URL do projeto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sim | Chave pública (anon) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Sim | Chave de serviço (nunca expor ao browser) |
+| `ADMIN_PASSWORD_HASH` | Sim | Hash bcrypt da password de `/admin`, codificado em base64 (comando de geração em `.env.example`) |
+| `AUTH_SECRET` | Sim | Segredo JWT, mín. 32 caracteres — gerar com `openssl rand -hex 32` |
+| `MBWAY_PHONE` | Não | Número MBWay para receber pagamentos |
+| `BANK_IBAN` | Não | IBAN mostrado na página `/obrigado` para pagamentos por transferência |
+| `WHATSAPP_PHONE` | Não | Número WhatsApp do footer |
+| `INSTAGRAM_URL` / `FACEBOOK_URL` | Não | Links das redes sociais no footer |
+| `NEXT_PUBLIC_ENABLED_FEATURES` | Não | Lista separada por vírgulas de features opt-in. Vazio = todas desligadas. Valor válido: `breakfast` |
+| `RATE_LIMIT_DISABLED` | Não | `true` em CI/testes para ignorar o rate limit |
+| `ALLOWED_DEV_ORIGINS` | Não | Só em dev — origens permitidas (default `127.0.0.1,localhost`) |
+| `SUPABASE_ACCESS_TOKEN` / `SUPABASE_PROJECT_REF` | Só CI | Secrets do GitHub usados por `scripts/migrate.js` |
 
 ---
 
@@ -103,7 +129,7 @@ Para aplicar em produção: executar o ficheiro SQL no Supabase SQL Editor.
 
 ### Supabase
 1. Criar projeto em [supabase.com](https://supabase.com) → região Europa
-2. SQL Editor → executar as migrations em `supabase/migrations/` por ordem
+2. Definir os secrets `SUPABASE_ACCESS_TOKEN` e `SUPABASE_PROJECT_REF` no GitHub — as migrations são aplicadas automaticamente pelo workflow (ver [Migrations](#migrations))
 3. Settings > API → copiar URL e chaves
 
 ### Vercel

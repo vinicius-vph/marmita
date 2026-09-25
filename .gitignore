@@ -62,3 +62,6 @@ supabase-schema.sql
 
 # supabase local state (docker)
 /.supabase
+
+# docs (symlink para project-decisions)
+/docs
