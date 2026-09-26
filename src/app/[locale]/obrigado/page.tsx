@@ -7,6 +7,7 @@ import { formatCurrency } from '@/lib/utils';
 import { formatPhone } from '@/lib/utils';
 import { createAdminClient } from '@/lib/supabase/server';
 import { UUID_REGEX } from '@/lib/constants';
+import { CONTACT_COLUMNS, readContact } from '@/lib/reservation-contact';
 import MbwayPaymentGuide from '@/components/public/MbwayPaymentGuide';
 import IbanCopyBlock from '@/components/public/IbanCopyBlock';
 import Header from '@/components/layout/Header';
@@ -25,14 +26,14 @@ export default async function ObrigadoPage({ searchParams }: Props) {
   const supabase = createAdminClient();
   const { data: reservation } = await supabase
     .from('reservations')
-    .select('customer_name, quantity, total_amount, payment_method, menu_items(name, category)')
+    .select(`${CONTACT_COLUMNS}, quantity, total_amount, payment_method, menu_items(name, category)`)
     .eq('id', id)
     .single();
 
   if (!reservation) redirect('/');
 
   const menuItem = reservation.menu_items as unknown as { name: string; category: string } | null;
-  const nome = reservation.customer_name;
+  const nome = readContact(reservation).name;
   const prato = menuItem?.name ?? '';
   const quantidade = reservation.quantity;
   const total = reservation.total_amount;

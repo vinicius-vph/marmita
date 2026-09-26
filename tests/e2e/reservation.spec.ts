@@ -19,9 +19,9 @@ test.describe('Reservation flow', () => {
     }
 
     await expect(page.getByText(/Forma de pagamento|Payment method|Forma de pago/i)).toBeVisible();
-    await expect(page.getByRole('radio', { name: /MBWay/i })).toBeVisible();
-    await expect(page.getByRole('radio', { name: /Numerário|Cash|Efectivo/i })).toBeVisible();
-    await expect(page.getByRole('radio', { name: /Transferência|Bank Transfer|Transferencia/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /MBWay/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Numerário|Cash|Efectivo/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Transferência|Bank Transfer|Transferencia/i })).toBeVisible();
   });
 
   test('shows error when payment method is not selected', async ({ page }) => {
@@ -102,7 +102,7 @@ test.describe('Reservation flow', () => {
     // Use real API — reservation is created in the test database
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
-    await page.getByRole('radio', { name: /MBWay/i }).click();
+    await page.getByRole('button', { name: /MBWay/i }).click();
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
 
     await page.waitForURL(/\/obrigado/);
@@ -131,7 +131,7 @@ test.describe('/obrigado page', () => {
 
     await page.getByLabel(/Nome completo|Full name|Nombre completo/i).fill('Maria Silva');
     await page.getByLabel(/Telefone|Phone|Teléfono/i).fill('912345678');
-    await page.getByRole('radio', { name: /MBWay/i }).click();
+    await page.getByRole('button', { name: /MBWay/i }).click();
     await page.getByRole('button', { name: /Confirmar|Confirm|Confirmar/i }).click();
 
     await page.waitForURL(/\/obrigado\?id=/);

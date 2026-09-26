@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "dev:cli": "node scripts/dev-cli.js",
+    "pii:encrypt": "node --experimental-strip-types --no-warnings --env-file=.env.local scripts/encrypt-pii.ts",
     "db:start": "supabase start && node scripts/use-local-db.js",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",

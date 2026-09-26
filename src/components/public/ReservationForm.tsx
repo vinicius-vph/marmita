@@ -158,6 +158,7 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
               <button
                 key={method}
                 type="button"
+                aria-pressed={paymentMethod === method}
                 onClick={() => { setPaymentMethod(method); setError(''); }}
                 className={`py-2 px-2 rounded-lg text-xs font-medium text-center transition-all ${
                   paymentMethod === method

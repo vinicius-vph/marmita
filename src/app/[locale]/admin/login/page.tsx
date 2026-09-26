@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export default function LoginPage() {
   const [password, setPassword] = useState('');
@@ -94,9 +95,9 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <a href="/" className="text-xs text-foreground/40 hover:text-foreground underline">
+          <Link href="/" className="text-xs text-foreground/40 hover:text-foreground underline">
             {t('back')}
-          </a>
+          </Link>
         </div>
       </div>
     </div>

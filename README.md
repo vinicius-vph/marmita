@@ -116,6 +116,7 @@ Os testes de admin precisam de `ADMIN_PASSWORD` (password em texto simples corre
 | `SUPABASE_SERVICE_ROLE_KEY` | Sim | Chave de serviço (nunca expor ao browser) |
 | `ADMIN_PASSWORD_HASH` | Sim | Hash bcrypt da password de `/admin`, codificado em base64 (comando de geração em `.env.example`) |
 | `AUTH_SECRET` | Sim | Segredo JWT, mín. 32 caracteres — gerar com `openssl rand -hex 32` |
+| `PII_ENCRYPTION_KEY` | Sim | 32 bytes em base64 que cifram nome/telemóvel dos clientes. Ver [docs/operations/pii-encryption.md](docs/operations/pii-encryption.md) |
 | `MBWAY_PHONE` | Não | Número MBWay para receber pagamentos |
 | `BANK_IBAN` | Não | IBAN mostrado na página `/obrigado` para pagamentos por transferência |
 | `WHATSAPP_PHONE` | Não | Número WhatsApp do footer |

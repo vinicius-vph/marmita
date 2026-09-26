@@ -12,7 +12,7 @@
  *   restart   down + up
  *   logs      Segue os logs do Next.js
  *   e2e [...] Corre o Playwright contra o servidor local (args passam para o playwright)
- *   reset     Recria a BD local a partir das migrations + seed (exige --yes)
+ *   reset     Recria a BD local a partir das migrations + seed e cifra os dados de exemplo (exige --yes)
  */
 
 const { spawn, spawnSync } = require('child_process');
@@ -226,7 +226,10 @@ function reset(args) {
   if (!args.includes('--yes')) fail('reset apaga os dados locais. Repete com --yes para confirmar.');
   if (!supabaseRunning()) fail('Supabase local não está a correr. Corre "up" primeiro.');
   const result = supabase(['db', 'reset'], { quiet: false });
-  process.exit(result.status ?? 1);
+  if (result.status !== 0) process.exit(result.status ?? 1);
+  // O seed insere dados de exemplo em claro; cifrar já a seguir, como em produção.
+  const encrypted = run('npm', ['run', 'pii:encrypt', '--', '--apply'], { quiet: false });
+  process.exit(encrypted.status ?? 1);
 }
 
 const commands = {

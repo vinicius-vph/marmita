@@ -1,4 +1,4 @@
-import type { Reservation } from '@/types';
+import { readContact, type ContactColumns } from '@/lib/reservation-contact';
 
 const MASK = '•••';
 
@@ -16,13 +16,20 @@ export function maskPhone(phone: string): string {
   return `${first}•• ••• ${digits.slice(-3)}`;
 }
 
-export function maskReservation<T extends Pick<Reservation, 'customer_name' | 'customer_phone'>>(
-  reservation: T
-) {
-  const { customer_name, customer_phone, ...rest } = reservation;
+const CONTACT_KEYS = [
+  'customer_name',
+  'customer_phone',
+  'customer_name_enc',
+  'customer_phone_enc',
+] as const satisfies readonly (keyof ContactColumns)[];
+
+export function maskReservation<T extends ContactColumns>(reservation: T) {
+  const rest: Partial<T> = { ...reservation };
+  for (const key of CONTACT_KEYS) delete rest[key];
+  const { name, phone } = readContact(reservation);
   return {
-    ...rest,
-    customer_name_masked: maskName(customer_name),
-    customer_phone_masked: maskPhone(customer_phone),
+    ...(rest as Omit<T, (typeof CONTACT_KEYS)[number]>),
+    customer_name_masked: maskName(name),
+    customer_phone_masked: maskPhone(phone),
   };
 }

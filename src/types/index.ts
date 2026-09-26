@@ -17,8 +17,10 @@ export interface MenuItem {
 export interface Reservation {
   id: string;
   menu_item_id: string;
-  customer_name: string;
-  customer_phone: string;
+  customer_name: string | null;
+  customer_phone: string | null;
+  customer_name_enc: string | null;
+  customer_phone_enc: string | null;
   quantity: number;
   total_amount: number;
   paid: boolean;
@@ -32,7 +34,10 @@ export interface ReservationWithMenu extends Reservation {
   menu_items: Pick<MenuItem, 'name' | 'meal_date' | 'price' | 'category'>;
 }
 
-export type MaskedReservationWithMenu = Omit<ReservationWithMenu, 'customer_name' | 'customer_phone'> & {
+export type MaskedReservationWithMenu = Omit<
+  ReservationWithMenu,
+  'customer_name' | 'customer_phone' | 'customer_name_enc' | 'customer_phone_enc'
+> & {
   customer_name_masked: string;
   customer_phone_masked: string;
 };

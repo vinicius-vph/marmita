@@ -4,6 +4,7 @@ import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UUID_REGEX } from '@/lib/constants';
 import { maskReservation } from '@/lib/pii-mask';
+import { encryptContact } from '@/lib/reservation-contact';
 import type { PaymentMethod } from '@/types';
 
 const VALID_PAYMENT_METHODS: PaymentMethod[] = ['mbway', 'cash', 'transfer'];
@@ -105,8 +106,7 @@ export async function POST(req: NextRequest) {
     .from('reservations')
     .insert({
       menu_item_id,
-      customer_name: customer_name.trim(),
-      customer_phone: customer_phone.trim(),
+      ...encryptContact({ name: customer_name.trim(), phone: customer_phone.trim() }),
       quantity: qty,
       total_amount,
       payment_method: payment_method as PaymentMethod,

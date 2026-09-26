@@ -1,4 +1,5 @@
 import { ALL_FEATURES, isFeatureEnabled } from '@/lib/features';
+import { parsePiiKey } from '@/lib/pii';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -8,6 +9,8 @@ function requireEnv(name: string): string {
 
 const authSecret = requireEnv('AUTH_SECRET');
 if (authSecret.length < 32) throw new Error('AUTH_SECRET must be at least 32 characters');
+
+parsePiiKey(process.env.PII_ENCRYPTION_KEY);
 
 const adminPasswordHashB64 = requireEnv('ADMIN_PASSWORD_HASH');
 const adminPasswordHash = Buffer.from(adminPasswordHashB64, 'base64').toString('utf8');

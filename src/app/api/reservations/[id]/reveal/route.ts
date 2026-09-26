@@ -4,6 +4,7 @@ import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UUID_REGEX } from '@/lib/constants';
+import { CONTACT_COLUMNS, readContact } from '@/lib/reservation-contact';
 
 const REVEAL_MAX_PER_WINDOW = 60;
 
@@ -34,7 +35,7 @@ export async function POST(
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('reservations')
-    .select('customer_name, customer_phone')
+    .select(CONTACT_COLUMNS)
     .eq('id', id)
     .maybeSingle();
 
@@ -43,8 +44,7 @@ export async function POST(
 
   await logAdminAction('reservation.reveal', req, id);
 
-  return NextResponse.json(
-    { name: data.customer_name, phone: data.customer_phone },
-    { headers: { 'Cache-Control': 'no-store' } }
-  );
+  return NextResponse.json(readContact(data), {
+    headers: { 'Cache-Control': 'no-store' },
+  });
 }
