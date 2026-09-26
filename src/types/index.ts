@@ -32,6 +32,11 @@ export interface ReservationWithMenu extends Reservation {
   menu_items: Pick<MenuItem, 'name' | 'meal_date' | 'price' | 'category'>;
 }
 
+export type MaskedReservationWithMenu = Omit<ReservationWithMenu, 'customer_name' | 'customer_phone'> & {
+  customer_name_masked: string;
+  customer_phone_masked: string;
+};
+
 export interface FundraisingSummary {
   category: Category;
   goal: number;

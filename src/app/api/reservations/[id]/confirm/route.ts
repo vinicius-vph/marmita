@@ -28,7 +28,7 @@ export async function PATCH(
     .from('reservations')
     .update({ paid: true, paid_at: paidAt })
     .eq('id', id)
-    .select()
+    .select('id, paid, paid_at, cancelled')
     .single();
 
   if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

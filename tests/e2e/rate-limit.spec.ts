@@ -14,7 +14,7 @@ async function postLogin(request: APIRequestContext, password: string, ip: strin
   return request.post('/api/admin/login', {
     headers: {
       'Content-Type': 'application/json',
-      Origin: 'http://localhost:3000',
+      Origin: process.env.BASE_URL ?? 'http://localhost:28417',
       'x-real-ip': ip,
     },
     data: JSON.stringify({ password }),

@@ -155,7 +155,11 @@
     "cancelYes": "Yes, cancel",
     "cancelNo": "No",
     "cancelledBadge": "Cancelled",
-    "cancelling": "Cancelling..."
+    "cancelling": "Cancelling...",
+    "showContact": "Show",
+    "hideContact": "Hide",
+    "revealing": "Loading...",
+    "revealError": "Could not show the details."
   },
   "ReservationsReport": {
     "exportButton": "Export PDF",

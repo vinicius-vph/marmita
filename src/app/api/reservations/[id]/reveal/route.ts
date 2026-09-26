@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UUID_REGEX } from '@/lib/constants';
 
-export async function PATCH(
+const REVEAL_MAX_PER_WINDOW = 60;
+
+export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -20,31 +23,28 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid reservation ID' }, { status: 400 });
   }
 
+  const rateLimit = await checkRateLimit(`reveal:${getClientIp(req)}`, REVEAL_MAX_PER_WINDOW);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+    );
+  }
+
   const supabase = createAdminClient();
-
-  const { data: existing } = await supabase
-    .from('reservations')
-    .select('cancelled')
-    .eq('id', id)
-    .single();
-
-  if (!existing) {
-    return NextResponse.json({ error: 'Reservation not found' }, { status: 404 });
-  }
-  if (existing.cancelled) {
-    return NextResponse.json({ error: 'Reservation already cancelled' }, { status: 409 });
-  }
-
   const { data, error } = await supabase
     .from('reservations')
-    .update({ cancelled: true })
+    .select('customer_name, customer_phone')
     .eq('id', id)
-    .select('id, paid, paid_at, cancelled')
-    .single();
+    .maybeSingle();
 
   if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-  await logAdminAction('reservation.cancel', req, id);
+  await logAdminAction('reservation.reveal', req, id);
 
-  return NextResponse.json(data);
+  return NextResponse.json(
+    { name: data.customer_name, phone: data.customer_phone },
+    { headers: { 'Cache-Control': 'no-store' } }
+  );
 }

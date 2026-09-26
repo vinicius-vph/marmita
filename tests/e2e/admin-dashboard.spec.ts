@@ -73,4 +73,44 @@ test.describe('Admin dashboard', () => {
       await expect(excelBtn).toBeEnabled();
     }
   });
+  test.describe('Contact privacy', () => {
+    const showBtnName = /^Mostrar|^Show/i;
+    const hideBtnName = /^Ocultar|^Hide/i;
+
+    test('phone is masked by default and revealed on demand', async ({ page }) => {
+      const showBtn = page.getByRole('button', { name: showBtnName }).first();
+      if (await showBtn.count() === 0) {
+        test.skip(true, 'No reservations available');
+        return;
+      }
+
+      await expect(page.getByText(/^\d?•• ••• \d{3}$/).first()).toBeVisible();
+
+      await showBtn.click();
+      await expect(page.getByRole('button', { name: hideBtnName }).first()).toBeVisible();
+
+      await page.getByRole('button', { name: hideBtnName }).first().click();
+      await expect(page.getByRole('button', { name: hideBtnName })).toHaveCount(0);
+    });
+
+    test('reservations API never returns plaintext name or phone', async ({ request }) => {
+      const res = await request.get('/api/reservations');
+      expect(res.ok()).toBeTruthy();
+      const rows = await res.json();
+      for (const row of rows) {
+        expect(row).not.toHaveProperty('customer_name');
+        expect(row).not.toHaveProperty('customer_phone');
+        expect(row.customer_phone_masked).toMatch(/•/);
+      }
+    });
+
+    test('reveal endpoint requires admin session', async ({ playwright, baseURL }) => {
+      const anon = await playwright.request.newContext({ baseURL });
+      const res = await anon.post('/api/reservations/00000000-0000-4000-8000-000000000000/reveal', {
+        headers: { Origin: baseURL! },
+      });
+      expect(res.status()).toBe(401);
+      await anon.dispose();
+    });
+  });
 });

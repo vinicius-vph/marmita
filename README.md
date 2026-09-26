@@ -40,13 +40,15 @@ npm run db:start
 # Inicia os containers Docker do Supabase e atualiza .env.local automaticamente
 ```
 
+> Alternativa recomendada: `npm run dev:cli -- up` arranca só os containers necessários **e** o Next.js. Ver [docs/operations/local-dev.md](docs/operations/local-dev.md).
+
 ### 4. Iniciar o servidor de desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-Abrir [http://localhost:3000](http://localhost:3000).
+Abrir [http://localhost:28417](http://localhost:28417) (porta fixa fora do range 3xxx para não colidir com outros projetos).
 
 ---
 

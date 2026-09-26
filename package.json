@@ -3,10 +3,11 @@
   "version": "1.7.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 28417",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "dev:cli": "node scripts/dev-cli.js",
     "db:start": "supabase start && node scripts/use-local-db.js",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",

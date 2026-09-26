@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { isFeatureEnabled } from '@/lib/features';
 import ReservationsTable from '@/components/admin/ReservationsTable';
+import { maskReservation } from '@/lib/pii-mask';
 import type { ReservationWithMenu, Category } from '@/types';
 
 export const revalidate = 0;
@@ -51,7 +52,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
       <h2 className="text-xl font-bold text-stone-800 mb-6">{t('title')}</h2>
       <ReservationsTable
         key={category}
-        reservations={(data ?? []) as ReservationWithMenu[]}
+        reservations={data.map(maskReservation)}
         category={category}
       />
     </div>

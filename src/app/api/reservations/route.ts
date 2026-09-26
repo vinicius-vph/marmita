@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { getAdminSession, checkOrigin } from '@/lib/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UUID_REGEX } from '@/lib/constants';
+import { maskReservation } from '@/lib/pii-mask';
 import type { PaymentMethod } from '@/types';
 
 const VALID_PAYMENT_METHODS: PaymentMethod[] = ['mbway', 'cash', 'transfer'];
@@ -21,7 +22,7 @@ export async function GET() {
     .order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  return NextResponse.json(data);
+  return NextResponse.json(data.map(maskReservation));
 }
 
 export async function POST(req: NextRequest) {
@@ -110,9 +111,9 @@ export async function POST(req: NextRequest) {
       total_amount,
       payment_method: payment_method as PaymentMethod,
     })
-    .select()
+    .select('id')
     .single();
 
   if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  return NextResponse.json({ ...data, total_amount }, { status: 201 });
+  return NextResponse.json({ id: data.id, total_amount }, { status: 201 });
 }

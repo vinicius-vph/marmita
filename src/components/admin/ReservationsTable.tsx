@@ -6,7 +6,8 @@ import { useTranslations, useLocale } from 'next-intl';
 import { format } from 'date-fns';
 import { pt, enUS, es } from 'date-fns/locale';
 import type { Locale } from 'date-fns';
-import { Category, ReservationWithMenu } from '@/types';
+import { Category, MaskedReservationWithMenu } from '@/types';
+import RevealableContact from '@/components/admin/RevealableContact';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 
 type StatusFilter = 'all' | 'pending' | 'paid';
@@ -18,13 +19,14 @@ const localeMap: Record<string, Locale> = { pt, en: enUS, es };
 // before drawing any dynamic text.
 function pdfSafe(s: string): string {
   return s
+    .replace(/•/g, '*')
     .replace(/[^\x00-\xFF]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
 interface Props {
-  reservations: ReservationWithMenu[];
+  reservations: MaskedReservationWithMenu[];
   category: Category;
 }
 
@@ -117,7 +119,7 @@ export default function ReservationsTable({ reservations: initial, category }: P
     transfer: t('paymentTransfer'),
   };
 
-  const statusLabel = (r: ReservationWithMenu) =>
+  const statusLabel = (r: MaskedReservationWithMenu) =>
     r.cancelled ? t('cancelledBadge') : r.paid ? tReport('statusPaid') : tReport('statusPending');
 
   async function handleDownloadPdf() {
@@ -290,8 +292,8 @@ export default function ReservationsTable({ reservations: initial, category }: P
             : '—';
 
           const cells = [
-            truncate(pdfSafe(r.customer_name), colWidths[0]),
-            truncate(pdfSafe(r.customer_phone), colWidths[1]),
+            truncate(pdfSafe(r.customer_name_masked), colWidths[0]),
+            truncate(pdfSafe(r.customer_phone_masked), colWidths[1]),
             truncate(pdfSafe(dishName), colWidths[2]),
             mealDate,
             String(r.quantity),
@@ -405,8 +407,8 @@ export default function ReservationsTable({ reservations: initial, category }: P
           : tReport('statusPending');
 
         const row = sheet.addRow({
-          customer: r.customer_name,
-          phone: r.customer_phone,
+          customer: r.customer_name_masked,
+          phone: r.customer_phone_masked,
           dish: r.menu_items?.name ?? '—',
           mealDate,
           qty: r.quantity,
@@ -603,11 +605,13 @@ export default function ReservationsTable({ reservations: initial, category }: P
               }`}
             >
               <div className="flex items-start justify-between gap-2 mb-1">
-                <p className="font-semibold text-foreground min-w-0">{r.customer_name}</p>
+                <RevealableContact
+                  reservationId={r.id}
+                  maskedName={r.customer_name_masked}
+                  maskedPhone={r.customer_phone_masked}
+                />
                 <p className="font-bold text-teal-700 shrink-0">{formatCurrency(r.total_amount)}</p>
               </div>
-
-              <p className="text-sm text-foreground/60">{r.customer_phone}</p>
 
               {r.menu_items && (
                 <p className="text-sm text-foreground/70 mt-1">

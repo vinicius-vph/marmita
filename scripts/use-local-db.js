@@ -45,13 +45,24 @@ function updateEnvFile(envPath, values) {
   fs.writeFileSync(envPath, content.trimStart());
 }
 
+function readEnvValue(envPath, key) {
+  if (!fs.existsSync(envPath)) return null;
+  const match = fs.readFileSync(envPath, 'utf8').match(new RegExp(`^${key}=(.+)$`, 'm'));
+  return match ? match[1].trim() : null;
+}
+
 try {
   const status = execSync('npx supabase status', { encoding: 'utf8' });
   const values = parseSupabaseStatus(status);
 
+  // Sem o serviço `auth` o status não imprime as chaves; como são estáveis em local,
+  // reaproveitam-se as que já estão no .env.local.
+  values.anonKey ??= readEnvValue(ENV_FILE, 'NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  values.serviceRoleKey ??= readEnvValue(ENV_FILE, 'SUPABASE_SERVICE_ROLE_KEY');
+
   if (!values.url || !values.anonKey || !values.serviceRoleKey) {
-    console.error('Erro: não foi possível ler as chaves do supabase status.');
-    console.error(status);
+    console.error('Erro: não foi possível obter as chaves locais do Supabase.');
+    console.error('Numa máquina nova, arranca uma vez com todos os serviços: npm run dev:cli -- restart --full');
     process.exit(1);
   }
 
