@@ -8,7 +8,8 @@
     "comeBackSoon": "Volte em breve!",
     "payment": "Pagamentos via MBWay para",
     "info": "Para maiores informações contacte nos.",
-    "adminLink": "Área de gestão"
+    "adminLink": "Área de gestão",
+    "privacyLink": "Privacidade"
   },
   "CategoryTabs": {
     "meals": "🍽️ Refeições",
@@ -35,7 +36,9 @@
     "errorPaymentMethod": "Por favor selecione a forma de pagamento.",
     "errorSubmit": "Erro ao submeter reserva.",
     "errorConnection": "Erro de ligação. Por favor tente novamente.",
-    "errorDeadlinePassed": "O prazo de reserva para este prato já terminou."
+    "errorDeadlinePassed": "O prazo de reserva para este prato já terminou.",
+    "privacyPrefix": "Os dados indicados acima servem só para gerir esta reserva. Saiba mais na nossa",
+    "privacyLinkText": "política de privacidade"
   },
   "MenuCard": {
     "selected": "✓ Selecionado",
@@ -247,5 +250,30 @@
   },
   "Admin": {
     "logout": "Sair"
+  },
+  "Privacy": {
+    "title": "Política de Privacidade",
+    "updatedAt": "Última atualização: 27 de setembro de 2026",
+    "intro": "A Marmita Solidária é uma iniciativa da Primeira Igreja Baptista de Vila Real. Esta página explica que dados pessoais recolhemos quando reserva uma refeição, para que servem e quais são os seus direitos, nos termos do Regulamento Geral sobre a Proteção de Dados (RGPD).",
+    "controllerTitle": "Responsável pelo tratamento",
+    "controllerText": "Primeira Igreja Baptista de Vila Real. Para qualquer questão sobre os seus dados, contacte-nos pelo canal indicado em baixo.",
+    "dataTitle": "Que dados recolhemos",
+    "dataText": "Ao fazer uma reserva pedimos o seu nome completo e número de telefone, além do prato escolhido, quantidade e forma de pagamento. Não pedimos morada, e-mail, dados de cartão nem qualquer outro dado sensível.",
+    "purposeTitle": "Para que usamos os seus dados",
+    "purposeText": "Usamos o nome e o telefone apenas para confirmar a sua reserva e o respetivo pagamento (por exemplo, para identificar a transferência ou o MBWay recebido). Não usamos os seus dados para marketing nem os partilhamos com terceiros para fins comerciais.",
+    "legalBasisTitle": "Base legal",
+    "legalBasisText": "O tratamento é necessário para gerir a reserva que nos pediu (execução de um contrato, art. 6.º, n.º 1, alínea b), do RGPD). O registo de acessos administrativos aos seus dados (auditoria) baseia-se no nosso interesse legítimo em prevenir abusos (art. 6.º, n.º 1, alínea f)).",
+    "securityTitle": "Como protegemos os seus dados",
+    "securityText": "O nome e o telefone são cifrados na base de dados (AES-256-GCM) e aparecem sempre mascarados (ex.: \"V••• S•••\") na área de gestão. Um responsável só vê o valor completo se escolher \"Mostrar\", ação que fica registada e volta a ocultar-se automaticamente ao fim de 30 segundos.",
+    "retentionTitle": "Quanto tempo guardamos os dados",
+    "retentionText": "Mantemos os dados enquanto forem necessários para gerir a refeição e a respetiva contabilidade. Pode pedir-nos a eliminação antecipada a qualquer momento (ver \"Os seus direitos\"), sujeito a obrigações legais de conservação de registos financeiros.",
+    "sharingTitle": "Com quem partilhamos os dados",
+    "sharingText": "Os dados ficam alojados junto de um fornecedor de alojamento (Supabase) num centro de dados na União Europeia. Não vendemos nem partilhamos os seus dados com terceiros para fins de marketing.",
+    "cookiesTitle": "Cookies",
+    "cookiesText": "Não usamos cookies de rastreio nem de publicidade. A área de gestão usa apenas um cookie técnico de sessão, necessário para autenticar a equipa administrativa.",
+    "rightsTitle": "Os seus direitos",
+    "rightsText": "Tem direito a aceder, retificar, apagar, limitar ou opor-se ao tratamento dos seus dados, e à sua portabilidade. Pode também apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD). Para exercer qualquer destes direitos, contacte-nos pelo canal indicado em baixo.",
+    "contactPrefix": "Contacte-nos pelo",
+    "back": "Voltar ao início"
   }
 }

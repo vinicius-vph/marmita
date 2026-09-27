@@ -3,7 +3,7 @@
 //
 // Usage (Node >= 22.6):
 //   node --experimental-strip-types --no-warnings --env-file=.env.local scripts/encrypt-pii.ts [--apply]
-// Required env: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PII_ENCRYPTION_KEY
+// Required env: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PII_ENCRYPTION_KEY_V<n>
 // Non-local databases also require --allow-remote.
 
 import { createClient } from '@supabase/supabase-js';

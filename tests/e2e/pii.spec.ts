@@ -7,14 +7,20 @@ import { maskName, maskPhone, maskReservation } from '../../src/lib/pii-mask';
 const newKey = () => randomBytes(32).toString('base64');
 
 test.describe('PII encryption', () => {
-  const originalKey = process.env.PII_ENCRYPTION_KEY;
+  const originalKey = process.env.PII_ENCRYPTION_KEY_V1;
+  const originalKey2 = process.env.PII_ENCRYPTION_KEY_V2;
+  const originalActive = process.env.PII_ENCRYPTION_KEY_ACTIVE_VERSION;
 
   test.beforeEach(() => {
-    process.env.PII_ENCRYPTION_KEY = newKey();
+    process.env.PII_ENCRYPTION_KEY_V1 = newKey();
+    delete process.env.PII_ENCRYPTION_KEY_V2;
+    delete process.env.PII_ENCRYPTION_KEY_ACTIVE_VERSION;
   });
 
   test.afterAll(() => {
-    process.env.PII_ENCRYPTION_KEY = originalKey;
+    process.env.PII_ENCRYPTION_KEY_V1 = originalKey;
+    process.env.PII_ENCRYPTION_KEY_V2 = originalKey2;
+    process.env.PII_ENCRYPTION_KEY_ACTIVE_VERSION = originalActive;
   });
 
   test('round-trips text, including accents', () => {
@@ -45,21 +51,39 @@ test.describe('PII encryption', () => {
 
   test('rejects decryption with a different key', () => {
     const encrypted = encryptPii('Maria', 'customer_name');
-    process.env.PII_ENCRYPTION_KEY = newKey();
+    process.env.PII_ENCRYPTION_KEY_V1 = newKey();
     expect(() => decryptPii(encrypted, 'customer_name')).toThrow();
   });
 
   test('fails clearly when the key is missing or has the wrong size', () => {
-    delete process.env.PII_ENCRYPTION_KEY;
-    expect(() => encryptPii('x', 'customer_name')).toThrow(/PII_ENCRYPTION_KEY/);
-    process.env.PII_ENCRYPTION_KEY = Buffer.from('too-short').toString('base64');
+    delete process.env.PII_ENCRYPTION_KEY_V1;
+    expect(() => encryptPii('x', 'customer_name')).toThrow(/PII_ENCRYPTION_KEY_V1/);
+    process.env.PII_ENCRYPTION_KEY_V1 = Buffer.from('too-short').toString('base64');
     expect(() => encryptPii('x', 'customer_name')).toThrow(/32 bytes/);
+  });
+
+  test('rotation: keeps decrypting the old version while writing under the new active one', () => {
+    const encryptedUnderV1 = encryptPii('Maria', 'customer_name');
+
+    process.env.PII_ENCRYPTION_KEY_V2 = newKey();
+    process.env.PII_ENCRYPTION_KEY_ACTIVE_VERSION = '2';
+
+    const encryptedUnderV2 = encryptPii('Maria', 'customer_name');
+    expect(encryptedUnderV2).toMatch(/^v2:/);
+    expect(decryptPii(encryptedUnderV1, 'customer_name')).toBe('Maria');
+    expect(decryptPii(encryptedUnderV2, 'customer_name')).toBe('Maria');
+  });
+
+  test('fails clearly when the active version has no matching key', () => {
+    process.env.PII_ENCRYPTION_KEY_ACTIVE_VERSION = '2';
+    expect(() => encryptPii('x', 'customer_name')).toThrow(/PII_ENCRYPTION_KEY_ACTIVE_VERSION/);
   });
 });
 
 test.describe('PII masking', () => {
   test.beforeEach(() => {
-    process.env.PII_ENCRYPTION_KEY = newKey();
+    process.env.PII_ENCRYPTION_KEY_V1 = newKey();
+    delete process.env.PII_ENCRYPTION_KEY_ACTIVE_VERSION;
   });
 
   test('masks name and phone', () => {

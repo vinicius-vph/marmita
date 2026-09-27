@@ -8,7 +8,8 @@
     "comeBackSoon": "¡Vuelva pronto!",
     "payment": "Pagos via MBWay a",
     "info": "Para obtener más información, póngase en contacto con nosotros.",
-    "adminLink": "Área de gestión"
+    "adminLink": "Área de gestión",
+    "privacyLink": "Privacidad"
   },
   "CategoryTabs": {
     "meals": "🍽️ Comidas",
@@ -35,7 +36,9 @@
     "errorPaymentMethod": "Por favor seleccione una forma de pago.",
     "errorSubmit": "Error al enviar reserva.",
     "errorConnection": "Error de conexión. Por favor intente nuevamente.",
-    "errorDeadlinePassed": "El plazo de reserva para este plato ha vencido."
+    "errorDeadlinePassed": "El plazo de reserva para este plato ha vencido.",
+    "privacyPrefix": "Los datos indicados arriba se usan solo para gestionar esta reserva. Sepa más en nuestra",
+    "privacyLinkText": "política de privacidad"
   },
   "MenuCard": {
     "selected": "✓ Seleccionado",
@@ -247,5 +250,30 @@
   },
   "Admin": {
     "logout": "Cerrar sesión"
+  },
+  "Privacy": {
+    "title": "Política de Privacidad",
+    "updatedAt": "Última actualización: 27 de septiembre de 2026",
+    "intro": "Marmita Solidária es una iniciativa de Primeira Igreja Baptista de Vila Real. Esta página explica qué datos personales recopilamos cuando reserva una comida, para qué los usamos y cuáles son sus derechos según el Reglamento General de Protección de Datos (RGPD).",
+    "controllerTitle": "Responsable del tratamiento",
+    "controllerText": "Primeira Igreja Baptista de Vila Real. Para cualquier consulta sobre sus datos, contáctenos por el canal indicado abajo.",
+    "dataTitle": "Qué datos recopilamos",
+    "dataText": "Al hacer una reserva pedimos su nombre completo y número de teléfono, además del plato elegido, cantidad y forma de pago. No pedimos dirección, correo electrónico, datos de tarjeta ni ningún otro dato sensible.",
+    "purposeTitle": "Para qué usamos sus datos",
+    "purposeText": "Usamos el nombre y el teléfono solo para confirmar su reserva y el pago correspondiente (por ejemplo, para identificar la transferencia o el pago MBWay recibido). No usamos sus datos para marketing ni los compartimos con terceros con fines comerciales.",
+    "legalBasisTitle": "Base legal",
+    "legalBasisText": "El tratamiento es necesario para gestionar la reserva que nos solicitó (ejecución de un contrato, art. 6.1.b del RGPD). El registro de accesos administrativos a sus datos (auditoría) se basa en nuestro interés legítimo en prevenir abusos (art. 6.1.f).",
+    "securityTitle": "Cómo protegemos sus datos",
+    "securityText": "El nombre y el teléfono se cifran en la base de datos (AES-256-GCM) y siempre aparecen enmascarados (ej.: \"V••• S•••\") en el área de gestión. Un responsable solo ve el valor completo si elige \"Mostrar\", acción que queda registrada y vuelve a ocultarse automáticamente a los 30 segundos.",
+    "retentionTitle": "Cuánto tiempo conservamos los datos",
+    "retentionText": "Conservamos los datos mientras sean necesarios para gestionar la comida y su contabilidad. Puede pedirnos su eliminación anticipada en cualquier momento (ver \"Sus derechos\"), sujeto a obligaciones legales de conservación de registros financieros.",
+    "sharingTitle": "Con quién compartimos los datos",
+    "sharingText": "Los datos se alojan con un proveedor de alojamiento (Supabase) en un centro de datos de la Unión Europea. No vendemos ni compartimos sus datos con terceros con fines de marketing.",
+    "cookiesTitle": "Cookies",
+    "cookiesText": "No usamos cookies de rastreo ni de publicidad. El área de gestión usa solo una cookie técnica de sesión, necesaria para autenticar al equipo administrativo.",
+    "rightsTitle": "Sus derechos",
+    "rightsText": "Tiene derecho a acceder, rectificar, suprimir, limitar u oponerse al tratamiento de sus datos, y a la portabilidad de los mismos. También puede presentar una reclamación ante su autoridad nacional de protección de datos. Para ejercer cualquiera de estos derechos, contáctenos por el canal indicado abajo.",
+    "contactPrefix": "Contáctenos por",
+    "back": "Volver al inicio"
   }
 }

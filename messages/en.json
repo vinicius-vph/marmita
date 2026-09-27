@@ -8,7 +8,8 @@
     "comeBackSoon": "Come back soon!",
     "payment": "Payments via MBWay to",
     "info": "For more information, please contact us.",
-    "adminLink": "Management area"
+    "adminLink": "Management area",
+    "privacyLink": "Privacy"
   },
   "CategoryTabs": {
     "meals": "🍽️ Meals",
@@ -35,7 +36,9 @@
     "errorPaymentMethod": "Please select a payment method.",
     "errorSubmit": "Error submitting reservation.",
     "errorConnection": "Connection error. Please try again.",
-    "errorDeadlinePassed": "The reservation deadline for this dish has passed."
+    "errorDeadlinePassed": "The reservation deadline for this dish has passed.",
+    "privacyPrefix": "The details above are only used to manage this reservation. Learn more in our",
+    "privacyLinkText": "privacy notice"
   },
   "MenuCard": {
     "selected": "✓ Selected",
@@ -247,5 +250,30 @@
   },
   "Admin": {
     "logout": "Sign out"
+  },
+  "Privacy": {
+    "title": "Privacy Notice",
+    "updatedAt": "Last updated: September 27, 2026",
+    "intro": "Marmita Solidária is an initiative of Primeira Igreja Baptista de Vila Real. This page explains what personal data we collect when you book a meal, what we use it for, and what rights you have under the General Data Protection Regulation (GDPR).",
+    "controllerTitle": "Data controller",
+    "controllerText": "Primeira Igreja Baptista de Vila Real. For any question about your data, contact us through the channel below.",
+    "dataTitle": "What data we collect",
+    "dataText": "When you make a reservation we ask for your full name and phone number, plus the dish you chose, quantity and payment method. We never ask for your address, email, card details, or any other sensitive data.",
+    "purposeTitle": "What we use your data for",
+    "purposeText": "We use your name and phone number only to confirm your reservation and the corresponding payment (for example, to identify a bank transfer or MBWay payment received). We never use your data for marketing or share it with third parties for commercial purposes.",
+    "legalBasisTitle": "Legal basis",
+    "legalBasisText": "Processing is necessary to manage the reservation you requested (performance of a contract, GDPR art. 6(1)(b)). Logging administrative access to your data (auditing) is based on our legitimate interest in preventing abuse (GDPR art. 6(1)(f)).",
+    "securityTitle": "How we protect your data",
+    "securityText": "Your name and phone number are encrypted in the database (AES-256-GCM) and always shown masked (e.g. \"V••• S•••\") in the management area. A staff member only sees the full value after choosing \"Reveal\", an action that is logged and automatically hides again after 30 seconds.",
+    "retentionTitle": "How long we keep your data",
+    "retentionText": "We keep your data for as long as it's needed to manage the meal and its accounting. You can ask us to delete it earlier at any time (see \"Your rights\"), subject to legal record-keeping obligations for financial records.",
+    "sharingTitle": "Who we share data with",
+    "sharingText": "Data is hosted with a hosting provider (Supabase) in a European Union data center. We never sell or share your data with third parties for marketing purposes.",
+    "cookiesTitle": "Cookies",
+    "cookiesText": "We don't use tracking or advertising cookies. The management area uses only a technical session cookie, required to authenticate the admin team.",
+    "rightsTitle": "Your rights",
+    "rightsText": "You have the right to access, rectify, erase, restrict or object to the processing of your data, and to data portability. You may also file a complaint with your national data protection authority. To exercise any of these rights, contact us through the channel below.",
+    "contactPrefix": "Contact us via",
+    "back": "Back to home"
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { MenuItem, Category, PaymentMethod } from '@/types';
 import MenuCard from './MenuCard';
@@ -190,6 +190,13 @@ export default function ReservationForm({ menuItems, category }: { menuItems: Me
         >
           {loading ? t('submitting') : t('submit')}
         </button>
+
+        <p className="text-xs text-center text-foreground/50">
+          {t('privacyPrefix')}{' '}
+          <Link href="/privacidade" className="underline hover:text-foreground/70">
+            {t('privacyLinkText')}
+          </Link>
+        </p>
       </form>
     </section>
   );
