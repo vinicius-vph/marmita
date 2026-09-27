@@ -112,5 +112,36 @@ test.describe('Admin dashboard', () => {
       expect(res.status()).toBe(401);
       await anon.dispose();
     });
+
+    test('export endpoint requires admin session', async ({ playwright, baseURL }) => {
+      const anon = await playwright.request.newContext({ baseURL });
+      const res = await anon.post('/api/reservations/export', {
+        headers: { Origin: baseURL! },
+        data: { ids: ['00000000-0000-4000-8000-000000000000'] },
+      });
+      expect(res.status()).toBe(401);
+      await anon.dispose();
+    });
+
+    test('export endpoint returns real, unmasked name and phone for an admin session', async ({ request, baseURL }) => {
+      const listRes = await request.get('/api/reservations');
+      const rows = await listRes.json();
+      if (rows.length === 0) {
+        test.skip(true, 'No reservations available');
+        return;
+      }
+
+      const id = rows[0].id;
+      const res = await request.post('/api/reservations/export', {
+        headers: { Origin: baseURL! },
+        data: { ids: [id] },
+      });
+      expect(res.ok()).toBeTruthy();
+      const contacts = await res.json();
+      expect(contacts).toHaveLength(1);
+      expect(contacts[0].id).toBe(id);
+      expect(contacts[0].name).not.toMatch(/•/);
+      expect(contacts[0].phone).not.toMatch(/•/);
+    });
   });
 });

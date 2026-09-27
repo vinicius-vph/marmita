@@ -47,6 +47,7 @@ export default function ReservationsTable({ reservations: initial, category }: P
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [generatingExcel, setGeneratingExcel] = useState(false);
+  const [exportError, setExportError] = useState(false);
 
   const uniqueDishes = useMemo(() => {
     const seen = new Set<string>();
@@ -122,9 +123,26 @@ export default function ReservationsTable({ reservations: initial, category }: P
   const statusLabel = (r: MaskedReservationWithMenu) =>
     r.cancelled ? t('cancelledBadge') : r.paid ? tReport('statusPaid') : tReport('statusPending');
 
+  // Full name/phone are needed here (unlike the on-screen masked table) so
+  // staff can match the export against actual bank/MBWay transfers and
+  // identify who is collecting each order. Fetched on demand and never
+  // cached, so exports always require a fresh, audited decrypt.
+  async function fetchUnmaskedContacts(ids: string[]): Promise<Map<string, { name: string; phone: string }>> {
+    const res = await fetch('/api/reservations/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: window.location.origin },
+      body: JSON.stringify({ ids }),
+    });
+    if (!res.ok) throw new Error('export failed');
+    const contacts: Array<{ id: string; name: string; phone: string }> = await res.json();
+    return new Map(contacts.map((c) => [c.id, { name: c.name, phone: c.phone }]));
+  }
+
   async function handleDownloadPdf() {
     setGeneratingPdf(true);
+    setExportError(false);
     try {
+      const contacts = await fetchUnmaskedContacts(filtered.map((r) => r.id));
       const { jsPDF } = await import('jspdf');
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -292,8 +310,8 @@ export default function ReservationsTable({ reservations: initial, category }: P
             : '—';
 
           const cells = [
-            truncate(pdfSafe(r.customer_name_masked), colWidths[0]),
-            truncate(pdfSafe(r.customer_phone_masked), colWidths[1]),
+            truncate(pdfSafe(contacts.get(r.id)?.name ?? r.customer_name_masked), colWidths[0]),
+            truncate(pdfSafe(contacts.get(r.id)?.phone ?? r.customer_phone_masked), colWidths[1]),
             truncate(pdfSafe(dishName), colWidths[2]),
             mealDate,
             String(r.quantity),
@@ -342,6 +360,8 @@ export default function ReservationsTable({ reservations: initial, category }: P
 
       const stamp = format(new Date(), 'yyyyMMdd-HHmm');
       doc.save(`reservas-${category}-${stamp}.pdf`);
+    } catch {
+      setExportError(true);
     } finally {
       setGeneratingPdf(false);
     }
@@ -349,7 +369,9 @@ export default function ReservationsTable({ reservations: initial, category }: P
 
   async function handleDownloadExcel() {
     setGeneratingExcel(true);
+    setExportError(false);
     try {
+      const contacts = await fetchUnmaskedContacts(filtered.map((r) => r.id));
       const ExcelJS = (await import('exceljs')).default;
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'Marmita Solidária';
@@ -407,8 +429,8 @@ export default function ReservationsTable({ reservations: initial, category }: P
           : tReport('statusPending');
 
         const row = sheet.addRow({
-          customer: r.customer_name_masked,
-          phone: r.customer_phone_masked,
+          customer: contacts.get(r.id)?.name ?? r.customer_name_masked,
+          phone: contacts.get(r.id)?.phone ?? r.customer_phone_masked,
           dish: r.menu_items?.name ?? '—',
           mealDate,
           qty: r.quantity,
@@ -505,6 +527,8 @@ export default function ReservationsTable({ reservations: initial, category }: P
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    } catch {
+      setExportError(true);
     } finally {
       setGeneratingExcel(false);
     }
@@ -592,6 +616,10 @@ export default function ReservationsTable({ reservations: initial, category }: P
           </button>
         </div>
       </div>
+
+      {exportError && (
+        <p role="alert" className="text-xs text-red-600 text-right">{tReport('exportError')}</p>
+      )}
 
       {filtered.length === 0 ? (
         <p className="text-center text-foreground/40 py-8">{t('empty')}</p>
